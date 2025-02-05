@@ -56,5 +56,15 @@ namespace TechtrainExtension.Api
             var responseJson = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<U>(responseJson);
         }
+
+        public async Task<Models.v3.Response<Models.v3.LoginResponse>?> PostLogin(string email, string password)
+        {
+            var payload = new Models.v3.LoginBody
+            {
+                email = email,
+                password = password
+            };
+            return await CreatePostRequest<Models.v3.LoginBody, Models.v3.Response<Models.v3.LoginResponse>>(baseUrlV3 + "/login", payload);
+        }
     }
 }
