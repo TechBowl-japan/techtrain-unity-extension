@@ -24,7 +24,7 @@ namespace TechtrainExtension.Config
 #if UNITY_EDITOR_WIN
             return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 #elif UNITY_EDITOR_OSX
-            return Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "Library", "Application Support";
+            return Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "Library", "Application Support");
 #elif UNITY_EDITOR_LINUX
             return Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".local", "share");
 #endif
