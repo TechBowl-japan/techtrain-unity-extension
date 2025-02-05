@@ -27,6 +27,8 @@ namespace TechtrainExtension
 
         private async Task InitializePage()
         {
+            var login = new Page.Login(this);
+            root.Add(login.root);
         }
 
         internal void Reload()
