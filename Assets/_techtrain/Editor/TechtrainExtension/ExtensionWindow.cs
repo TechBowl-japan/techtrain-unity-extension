@@ -1,18 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
+using UnityEditor;
 
-public class ExtensionWindow : MonoBehaviour
+
+namespace TechtrainExtension
 {
-    // Start is called before the first frame update
-    void Start()
+    public class ExtensionWindow : EditorWindow
     {
-        
+        [SerializeField] private StyleSheet styleSheet;
+
+        public void CreateGUI()
+        {
+
+            var root = new VisualElement();
+            root.styleSheets.Add(styleSheet);
+            root.AddToClassList("root");
+            rootVisualElement.Clear();
+            rootVisualElement.Add(root);
+        }
+
+        [MenuItem("Tools/Techtrain")]
+        public static void ShowWindow()
+        {
+            var wnd = GetWindow<ExtensionWindow>();
+            wnd.titleContent = new GUIContent("Techtrain");
+        }
+
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
