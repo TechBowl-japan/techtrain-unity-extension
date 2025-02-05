@@ -1,4 +1,4 @@
-#nullable enable
+Ôªø#nullable enable
 
 using UnityEngine.UIElements;
 using UnityEngine;
@@ -29,6 +29,12 @@ namespace TechtrainExtension.Page
             root.Add(passwordField);
             root.Add(loginButton);
             root.Add(errorArea);
+
+            if (window.configManager.Config.auth.apiToken != null)
+            {
+                window.configManager.SetApiToken(null);
+                ShowError("Ë™çË®º„Å´Â§±Êïó„Åó„Åæ„Åó„Åü\nÂÜçÂ∫¶„É≠„Ç∞„Ç§„É≥„Åó„Å¶„Åè„Å†„Åï„ÅÑ");
+            }
         }
 
         private VisualElement Create()
@@ -56,19 +62,24 @@ namespace TechtrainExtension.Page
             return new Button(async() =>
             {
                 SetInputEnabled(false);
+                ClearError();
                 var task = await window.apiClient.PostLogin(emailField.value, passwordField.value);
-                if (task?.data?.api_token != null)
+                var apiToken = task?.data?.api_token;
+                if (apiToken != null)
                 {
-                    Debug.Log($"Login success token: {task.data?.api_token}");
+                    window.configManager.SetApiToken(apiToken);
+                    window.Reload();
+                    return;
                 }
-                else if(task != null)
+                if(task != null)
                 {
-                    ShowError($"ÉçÉOÉCÉìÇ…é∏îsÇµÇ‹ÇµÇΩ\n{task.message}");
+                    ShowError($"„É≠„Ç∞„Ç§„É≥„Å´Â§±Êïó„Åó„Åæ„Åó„Åü\n{task.message}");
                 }
                 else
                 {
-                    ShowError("ÉçÉOÉCÉìÇ…é∏îsÇµÇ‹ÇµÇΩ");
+                    ShowError("„É≠„Ç∞„Ç§„É≥„Å´Â§±Êïó„Åó„Åæ„Åó„Åü");
                 }
+                SetInputEnabled(true);
             })
             {
                 text = "Login"
@@ -80,9 +91,14 @@ namespace TechtrainExtension.Page
             return new VisualElement();
         }
 
-        private void ShowError(string message)
+        private void ClearError()
         {
             errorArea.Clear();
+        }
+
+        private void ShowError(string message)
+        {
+            ClearError();
             errorArea.Add(new HelpBox()
             {
                 text = message,

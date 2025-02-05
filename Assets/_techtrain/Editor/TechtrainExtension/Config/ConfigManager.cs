@@ -62,7 +62,7 @@ namespace TechtrainExtension.Config
             Config = Toml.ReadFile<Config>(configPath);
         }
 
-        public void SetApiToken(string token)
+        public void SetApiToken(string? token)
         {
             Config.auth.apiToken = token;
             Save();
