@@ -28,7 +28,7 @@ namespace TechtrainExtension.Api
             client.DefaultRequestHeaders.Add("User-Agent", "TechTrainExtension");
         }
 
-        private async Task<T?> CreateGetRequest<T>(string url)
+        private async Task<T?> CreateGetRequest<T>(string url, bool ensureSuccess = false)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             if (token != null)
@@ -37,12 +37,12 @@ namespace TechtrainExtension.Api
 
             }
             var response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+            if (ensureSuccess) response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(json);
         }
 
-        private async Task<U?> CreatePostRequest<T, U>(string url, T payload)
+        private async Task<U?> CreatePostRequest<T, U>(string url, T payload, bool ensureSuccess = false)
         {
             var json = JsonConvert.SerializeObject(payload);
             var request = new HttpRequestMessage(HttpMethod.Post, url);
@@ -52,7 +52,7 @@ namespace TechtrainExtension.Api
                 request.Headers.Add("Authorization", $"Bearer {token}");
             }
             var response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+            if (ensureSuccess) response.EnsureSuccessStatusCode();
             var responseJson = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<U>(responseJson);
         }
