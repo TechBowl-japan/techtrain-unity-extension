@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace TechtrainExtension.Manifests
+namespace TechtrainExtension.Manifests.Models
 {
     public sealed class Railway
     {
