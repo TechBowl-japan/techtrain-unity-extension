@@ -2,10 +2,10 @@
 
 using System.Net.Http;
 using System.Threading.Tasks;
-using Unity.Plastic.Newtonsoft.Json;
 using Unity.VisualScripting.FullSerializer;
 using UnityEditor.VersionControl;
 using UnityEngine;
+using Newtonsoft.Json;
 
 namespace TechtrainExtension.Api
 {

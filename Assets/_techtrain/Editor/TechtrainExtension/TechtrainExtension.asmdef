@@ -5,7 +5,7 @@
         "UnityEngine.TestRunner",
         "Nett",
         "Unity.VisualScripting.Core",
-        "Unity.Plastic.Newtonsoft.Json"
+        "Newtonsoft.Json"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -14,7 +14,7 @@
     "precompiledReferences": [
         "nunit.framework.dll",
         "Nett.dll",
-        "Unity.Plastic.Newtonsoft.Json.dll"
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
