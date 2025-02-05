@@ -1,0 +1,25 @@
+{
+    "name": "TechtrainExtension",
+    "rootNamespace": "",
+    "references": [
+        "UnityEngine.TestRunner",
+        "Nett",
+        "Unity.VisualScripting.Core",
+        "Unity.Plastic.Newtonsoft.Json"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Nett.dll",
+        "Unity.Plastic.Newtonsoft.Json.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
