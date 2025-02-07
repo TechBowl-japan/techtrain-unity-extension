@@ -11,12 +11,15 @@ namespace TechtrainExtension
         [SerializeField] private StyleSheet styleSheet;
         internal Config.ConfigManager configManager;
         internal Api.Client apiClient;
+        internal Manifests.Manager manifestsManager;
         private VisualElement root;
 
         public void CreateGUI()
         {
             configManager = new Config.ConfigManager();
             apiClient = new Api.Client(configManager.Config);
+            manifestsManager = new Manifests.Manager();
+
             root = new VisualElement();
             root.styleSheets.Add(styleSheet);
             root.AddToClassList("root");
@@ -27,6 +30,9 @@ namespace TechtrainExtension
 
         private async Task InitializePage()
         {
+            var manifestRailway = manifestsManager.GetRailway();
+            var railway = await apiClient.GetRailway(manifestRailway.railwayId);
+            Debug.Log(railway);
         }
 
         internal void Reload()

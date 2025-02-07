@@ -56,5 +56,10 @@ namespace TechtrainExtension.Api
             var responseJson = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<U>(responseJson);
         }
+
+        public async Task<Models.v3.Response<Models.v3.Railway>?> GetRailway(int railwayId)
+        {
+            return await CreateGetRequest<Models.v3.Response<Models.v3.Railway>>($"{baseUrlV3}/techtrain/user/railways/{railwayId}");
+        }
     }
 }

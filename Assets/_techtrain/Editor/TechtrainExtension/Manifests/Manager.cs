@@ -16,6 +16,11 @@ namespace TechtrainExtension.Manifests
             railway = ReadJon<Railway>(railwayPath);
         }
 
+        public Railway GetRailway()
+        {
+            return railway;
+        }
+
         public Station GetStation(int order)
         {
             if (!railway.railway.TryGetValue(order.ToString(), out var stationFileName))
