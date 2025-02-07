@@ -5,7 +5,7 @@
         "UnityEngine.TestRunner",
         "Nett",
         "Unity.VisualScripting.Core",
-        "Newtonsoft.Json",
+        "Newtonsoft.Json"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
