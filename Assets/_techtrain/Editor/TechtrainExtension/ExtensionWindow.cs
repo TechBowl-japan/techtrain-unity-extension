@@ -27,6 +27,13 @@ namespace TechtrainExtension
 
         private async Task InitializePage()
         {
+            var isMaintenance = await IsMaintenance();
+            if (isMaintenance)
+            {
+                var maintenance = new Pages.Maintenance();
+                root.Add(maintenance.root);
+                return;
+            }
         }
 
         internal void Reload()
@@ -44,6 +51,11 @@ namespace TechtrainExtension
             wnd.titleContent = new GUIContent("Techtrain");
         }
 
+        private async Task<bool> IsMaintenance()
+        {
+            var response = await apiClient.GetIsMaintenance();
+            return (response?.data.is_maintenance ?? true);
+        }
     }
 
 }
