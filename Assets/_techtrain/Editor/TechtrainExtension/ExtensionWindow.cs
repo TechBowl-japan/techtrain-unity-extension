@@ -30,7 +30,7 @@ namespace TechtrainExtension
 
         private async Task InitializePage()
         {
-            if (apiClient == null)
+            if (apiClient == null || root == null)
             {
                 return;
             }
