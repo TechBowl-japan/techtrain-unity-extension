@@ -30,7 +30,7 @@ namespace TechtrainExtension
             var isMaintenance = await IsMaintenance();
             if (isMaintenance)
             {
-                var maintenance = new Pages.Maintenance();
+                var maintenance = new Pages.Maintenance(this);
                 root.Add(maintenance.root);
                 return;
             }
