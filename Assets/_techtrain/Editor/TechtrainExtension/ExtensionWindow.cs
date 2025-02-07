@@ -1,3 +1,4 @@
+#nullable enable
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor;
@@ -8,17 +9,16 @@ namespace TechtrainExtension
 {
     public class ExtensionWindow : EditorWindow
     {
-        [SerializeField] private StyleSheet styleSheet;
-        internal Config.ConfigManager configManager;
-        internal Api.Client apiClient;
-        internal RailwayManager railwayManager;
-        private VisualElement root;
+        [SerializeField] private readonly StyleSheet styleSheet;
+        internal Config.ConfigManager? configManager;
+        internal Api.Client? apiClient;
+        internal RailwayManager? railwayManager;
+        private VisualElement? root;
 
         public void CreateGUI()
         {
             configManager = new Config.ConfigManager();
             apiClient = new Api.Client(configManager.Config);
-            railwayManager = new RailwayManager(apiClient, false);
 
             root = new VisualElement();
             root.styleSheets.Add(styleSheet);
@@ -30,6 +30,11 @@ namespace TechtrainExtension
 
         private async Task InitializePage()
         {
+            if (apiClient == null)
+            {
+                return;
+            }
+            railwayManager = new RailwayManager(apiClient, false);
             await railwayManager.Initialize();
             if (railwayManager.IsClearAllStations())
             {
@@ -66,9 +71,14 @@ namespace TechtrainExtension
 
         internal void Reload()
         {
+            if (root == null || configManager == null)
+            {
+                return;
+            }
             root.Clear();
             configManager.Reload();
             apiClient = new Api.Client(configManager.Config);
+
             _ = InitializePage();
         }
 
