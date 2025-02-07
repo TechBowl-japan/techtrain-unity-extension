@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor;
 using System.Threading.Tasks;
+using System.Linq;
 
 
 namespace TechtrainExtension
@@ -73,6 +74,11 @@ namespace TechtrainExtension
             if (manifestStation == null) {
                 root.Add(new Label("Station情報の取得に失敗しました。時間をおいて再度試すか、運営までお問い合わせください"));
                 root.Add(new Button(() => { this.Reload(); }) { text = "再読み込み" });
+                return;
+            }
+            if (manifestStation.tests.Count() > 1 || !manifestStation.tests.All((test)=>test.type != "unity"))
+            {
+                root.Add(new Label("このStationは自動テストではないためUnity上でクリア判定が行えません。ブラウザ上から判定を行ってください"));
                 return;
             }
             if (testRunner.isRunning)
