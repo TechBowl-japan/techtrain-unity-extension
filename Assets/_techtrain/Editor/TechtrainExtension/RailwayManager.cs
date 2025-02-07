@@ -146,9 +146,6 @@ namespace TechtrainExtension
 
 
             var response = await apiClient.PostStationClearJudgement(apiRailway.id, body);
-            Debug.Log(response?.message);
-            Debug.Log(response?.data);
-            Debug.Log(response?.code);
         }
     }
 }

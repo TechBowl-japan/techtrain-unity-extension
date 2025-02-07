@@ -160,11 +160,6 @@ namespace TechtrainExtension
 
         internal bool IsTestSucessful(int order)
         {
-            Debug.Log($"IsTestSucessful {this.order} {order}");
-            foreach (var result in results)
-            {
-                Debug.Log($"IsTestSucessful {result.path} {result.isPassed}");
-            }
             return
                 this.order == order &&
                 results != null &&

@@ -113,7 +113,6 @@ namespace TechtrainExtension.Pages
             {
                 return;
             }
-            Debug.Log($"RunTests {order}");
             testRunner.RunTest(manifestStation.tests[0], order);
         }
     }
