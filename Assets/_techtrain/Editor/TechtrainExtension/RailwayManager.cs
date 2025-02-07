@@ -1,8 +1,10 @@
 #nullable enable
+using NUnit.Framework;
 using System.Threading.Tasks;
 using TechtrainExtension.Api.Models.v3;
 using TechtrainExtension.Manifests.Models;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace TechtrainExtension
 {
@@ -118,6 +120,35 @@ namespace TechtrainExtension
                 return null;
             }
             return GetManifestStation(currentStation.order);
+        }
+
+        internal async Task ReportTestResult(int order, TestRunner runner)
+        {
+            if (apiRailway == null || runner.isRestored)
+            {
+                return;
+            }
+            string error = "";
+            foreach(var result in runner.results)
+            {
+                if (result.isPassed != true)
+                {
+                    error += $"{result.path}\n{result.errorMessage}\n";
+                }
+            }
+
+            var body = new Api.Models.v3.StationClearJudgementBody()
+            {
+                order = order,
+                is_clear = runner.IsTestSucessful(order),
+                error_content = error
+            };
+
+
+            var response = await apiClient.PostStationClearJudgement(apiRailway.id, body);
+            Debug.Log(response?.message);
+            Debug.Log(response?.data);
+            Debug.Log(response?.code);
         }
     }
 }

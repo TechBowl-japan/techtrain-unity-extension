@@ -79,9 +79,11 @@ namespace TechtrainExtension
             {
                 await testRunner.WaitForTestResult();
             }
+            await railwayManager.ReportTestResult(currentStation.order, testRunner);
             if (testRunner.IsTestSucessful(currentStation.order))
             {
-                root.Add(new Label("すでにクリアしています！"));
+                testRunner.ClearTestResults();
+                this.Reload();
                 return;
             }
             var tests = new Pages.Tests(this, manifestStation, testRunner, currentStation.order);

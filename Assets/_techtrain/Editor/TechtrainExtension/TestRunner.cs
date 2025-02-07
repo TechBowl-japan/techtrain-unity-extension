@@ -65,7 +65,6 @@ namespace TechtrainExtension
                 try
                 {
                     results = JsonConvert.DeserializeObject<List<TestResult>>(testResults);
-                    order = PlayerPrefs.GetInt(TestOrderKey);
                 }
                 catch (Exception e)
                 {
@@ -78,7 +77,16 @@ namespace TechtrainExtension
             {
                 results = new List<TestResult>();
             }
+            order = PlayerPrefs.GetInt(TestOrderKey);
             isRunning = PlayerPrefs.GetInt(TestIsRunningKey) == 1;
+        }
+
+        internal void ClearTestResults()
+        {
+            results = new List<TestResult>();
+            PlayerPrefs.DeleteKey(TestResultKey);
+            PlayerPrefs.DeleteKey(TestOrderKey);
+            PlayerPrefs.DeleteKey(TestIsRunningKey);
         }
 
         static List<TestResult> ParseTestResult(ITestResultAdaptor result, string path = "", List<TestResult> parsed = null)
@@ -152,6 +160,11 @@ namespace TechtrainExtension
 
         internal bool IsTestSucessful(int order)
         {
+            Debug.Log($"IsTestSucessful {this.order} {order}");
+            foreach (var result in results)
+            {
+                Debug.Log($"IsTestSucessful {result.path} {result.isPassed}");
+            }
             return
                 this.order == order &&
                 results != null &&
