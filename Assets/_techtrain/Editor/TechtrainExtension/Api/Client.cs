@@ -6,6 +6,7 @@ using Unity.VisualScripting.FullSerializer;
 using UnityEditor.VersionControl;
 using UnityEngine;
 using Newtonsoft.Json;
+using System;
 
 namespace TechtrainExtension.Api
 {
@@ -61,5 +62,11 @@ namespace TechtrainExtension.Api
         {
             return await CreateGetRequest<Models.v3.Response<Models.v3.Railway>>($"{baseUrlV3}/techtrain/user/railways/{railwayId}");
         }
+
+        public async Task<Models.v3.Response<object>?> PostStationClearJudgement(int railwayId, Models.v3.StationClearJudgementBody judgement)
+        {
+            return await CreatePostRequest<Models.v3.StationClearJudgementBody, Models.v3.Response<object>?>($"{baseUrlV3}/techtrain/user/railways/{railwayId}/station-clear-judgements", judgement);
+        }
     }
 }
+
