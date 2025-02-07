@@ -2,16 +2,13 @@
 
 using System.Net.Http;
 using System.Threading.Tasks;
-using Unity.VisualScripting.FullSerializer;
-using UnityEditor.VersionControl;
-using UnityEngine;
 using Newtonsoft.Json;
 
 namespace TechtrainExtension.Api
 {
     public class Client
     {
-        static HttpClient client;
+        static HttpClient client = new HttpClient();
         private string baseUrl = "https://api.techtrain.dev/api/v2";
         private string baseUrlV3 = "https://api.techtrain.dev/api/v3";
         private string? token;
@@ -24,7 +21,6 @@ namespace TechtrainExtension.Api
                 baseUrlV3 = config.apiEndpointV3 ?? baseUrlV3;
                 token = config.auth?.apiToken ?? null;
             }
-            client = new HttpClient();
             client.DefaultRequestHeaders.Add("User-Agent", "TechTrainExtension");
         }
 
