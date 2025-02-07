@@ -56,5 +56,10 @@ namespace TechtrainExtension.Api
             var responseJson = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<U>(responseJson);
         }
+
+        public async Task<Models.v3.Response<Models.v3.IsMaintenanceResponse>?> GetIsMaintenance()
+        {
+            return await CreateGetRequest<Models.v3.Response<Models.v3.IsMaintenanceResponse>>($"{baseUrlV3}/is_maintenance");
+        }
     }
 }
