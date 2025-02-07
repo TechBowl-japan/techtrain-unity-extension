@@ -29,7 +29,7 @@ namespace TechtrainExtension
         {
             if (!await IsLoggedIn())
             {
-                var login = new Page.Login(this);
+                var login = new Pages.Login(this);
                 root.Add(login.root);
                 return;
             }

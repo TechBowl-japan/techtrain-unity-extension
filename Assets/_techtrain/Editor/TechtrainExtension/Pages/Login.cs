@@ -3,7 +3,7 @@
 using UnityEngine.UIElements;
 using UnityEngine;
 
-namespace TechtrainExtension.Page
+namespace TechtrainExtension.Pages
 {
     public class Login
     {
