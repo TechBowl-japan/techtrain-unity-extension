@@ -6,37 +6,48 @@ using UnityEngine.UIElements;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEditor.TestTools.TestRunner;
 
 namespace TechtrainExtension.Pages
 {
-    public class Tests
+    internal class Tests
     {
         private ExtensionWindow window;
         private RailwayManager railwayManager;
         private TestRunner testRunner;
 
         private Station? manifestStation;
+        private int order = 0;
 
         internal VisualElement root;
 
         private Button runButton;
         private VisualElement resultArea;
+        private Button showTestRunnerButton;
 
-        public Tests(ExtensionWindow self, RailwayManager _railwayManager)
+        internal Tests(ExtensionWindow self, RailwayManager _railwayManager, TestRunner _testRunner)
         {
             window = self;
             railwayManager = _railwayManager;
+            var currentStation = railwayManager.GetCurrentStation();
+            if (currentStation == null)
+            {
+                return;
+            }
+            order = _testRunner.order;
             manifestStation = railwayManager.GetCurrentStationManifest();
-            testRunner = new TestRunner();
+
+            testRunner = _testRunner;
 
 
             root = Create();
             runButton = CreateRunButton();
             resultArea = CreateResultArea();
+            showTestRunnerButton = CreateShowTestRunnerButton();
 
             root.Add(runButton);
             root.Add(resultArea);
-            root.Add(new Label("Tests"));
+            root.Add(showTestRunnerButton);
         }
         private VisualElement Create()
         {
@@ -47,9 +58,9 @@ namespace TechtrainExtension.Pages
 
         private Button CreateRunButton()
         {
-            var runButton = new Button(() => _ = RunTests())
+            var runButton = new Button(() => RunTests())
             {
-                text = "Run Tests"
+                text = "できた！"
             };
             return runButton;
         }
@@ -58,21 +69,58 @@ namespace TechtrainExtension.Pages
         {
             var resultArea = new VisualElement();
             resultArea.AddToClassList("result-area");
+
+            if (testRunner.results == null || testRunner.results.Count == 0 || testRunner.order != order)
+            {
+                resultArea.Add(new Label("「できた！」ボタンを押してテストを実行しましょう"));
+                return resultArea;
+            }
+
+            foreach (var result in testRunner.results)
+            {
+                var resultElement = new HelpBox()
+                {
+                    messageType = result.isPassed ? HelpBoxMessageType.Info : HelpBoxMessageType.Error,
+                };
+                resultElement.AddToClassList("result");
+                var container = new VisualElement();
+                var summary = result.isPassed ? "Passed" : "Failed";
+                var testLabel = new Label($"{result.path} {summary}");
+                testLabel.AddToClassList("test-label");
+                container.Add(testLabel);
+                if (!result.isPassed)
+                {
+                    var errorMessageLabel = new Label(result.errorMessage);
+                    errorMessageLabel.AddToClassList("error-message");
+                    container.Add(errorMessageLabel);
+                }
+                resultElement.Add(container);
+                resultArea.Add(resultElement);
+            }
             return resultArea;
         }
 
-        private async Task<bool> RunTests()
+        private Button CreateShowTestRunnerButton()
         {
-            if (manifestStation == null)
+            return new Button(() => ShowTestRunner())
             {
-                return false;
-            }
-            var results = new List<TestResult>();
-            foreach (var test in manifestStation.tests)
+                text = "テストランナーを開く"
+            };
+        }
+
+        private void ShowTestRunner()
+        {
+            var wnd = TestRunnerWindow.GetWindow<TestRunnerWindow>();
+            wnd.titleContent = new GUIContent("TestRunner");
+        }
+
+        private void RunTests()
+        {
+            if (manifestStation == null || manifestStation.tests.Count != 1)
             {
-                results.Add(await testRunner.RunTest(test));
+                return;
             }
-            return results.All(result => result.isPassed);
+            testRunner.RunTest(manifestStation.tests[0], order);
         }
 
     }

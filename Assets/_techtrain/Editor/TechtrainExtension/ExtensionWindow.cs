@@ -10,16 +10,19 @@ namespace TechtrainExtension
     public class ExtensionWindow : EditorWindow
     {
         [SerializeField] private StyleSheet styleSheet;
+
         internal Config.ConfigManager? configManager;
         internal Api.Client? apiClient;
         internal RailwayManager? railwayManager;
+        internal TestRunner? testRunner;
+
         private VisualElement? root;
 
         public void CreateGUI()
         {
-            //TODO: PlayModeでテストが実行されると初期化されるめ、テストのコールバックをここで受け取る必要がある
             configManager = new Config.ConfigManager();
             apiClient = new Api.Client(configManager.Config);
+            testRunner = new TestRunner();
 
             root = new VisualElement();
             root.styleSheets.Add(styleSheet);
@@ -66,7 +69,7 @@ namespace TechtrainExtension
                 root.Add(new Label("続きに挑戦するには、有料プランへの登録が必要です。"));
                 return;
             }
-            var tests = new Pages.Tests(this, railwayManager);
+            var tests = new Pages.Tests(this, railwayManager, testRunner);
             root.Add(tests.root);
         }
 

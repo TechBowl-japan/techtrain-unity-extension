@@ -1,9 +1,11 @@
 using System;
 using System.Threading.Tasks;
 using TechtrainExtension.Manifests.Models;
-using UnityEditor;
 using UnityEditor.TestTools.TestRunner.Api;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace TechtrainExtension
 {
@@ -11,36 +13,90 @@ namespace TechtrainExtension
     internal class TestRunner
     {
         private TestRunnerApi testRunner;
+
+        internal List<TestResult> results;
+        internal int order = 0;
+
+        private const string TestResultKey = "dev.techtrain.TechtrainExtension.TestResult";
+        private const string TestOrderKey = "dev.techtrain.TechtrainExtension.TestOrder";
+
         internal TestRunner()
         {
             testRunner = ScriptableObject.CreateInstance<TestRunnerApi>();
+            RestoreTestResuts();
+
+
+
+            var testCallback = new TestCallback();
+            testCallback.OnRunFinishedEvent += (result) =>
+            {
+                if (result == null)
+                {
+                    return;
+                }
+                var parsed = ParseTestResult(result);
+                results = parsed;
+                PlayerPrefs.SetString(TestResultKey, JsonConvert.SerializeObject(parsed.ToArray()));
+                Debug.Log(PlayerPrefs.GetString(TestResultKey));
+
+            };
+            testRunner.RegisterCallbacks(testCallback);
         }
 
-        public Task<TestResult> RunTest(StationTest test)
+        private void RestoreTestResuts()
         {
+            var testResults = PlayerPrefs.GetString(TestResultKey);
+            if (!string.IsNullOrEmpty(testResults))
+            {
+                try
+                {
+                    results = JsonConvert.DeserializeObject<List<TestResult>>(testResults);
+                }
+                catch (Exception e)
+                {
+                    PlayerPrefs.DeleteKey(TestResultKey);
+                    PlayerPrefs.DeleteKey(TestOrderKey);
+                    results = new List<TestResult>();
+                }
+            }
+            else
+            {
+                results = new List<TestResult>();
+            }
+        }
+
+        static List<TestResult> ParseTestResult(ITestResultAdaptor result, string path = "", List<TestResult> parsed = null)
+        {
+            if (parsed == null)
+            {
+                parsed = new List<TestResult>();
+            }
+            if (result.Children == null || result.Children.Count()< 1)
+            {
+                parsed.Add(new TestResult()
+                {
+                    path = result.FullName,
+                    isPassed = result.TestStatus == TestStatus.Passed,
+                    errorMessage = result.Message
+                });
+                return parsed;
+            }
+            foreach (var child in result.Children)
+            {
+                ParseTestResult(child, $"{path}/{result.Name}", parsed);
+            }
+            return parsed;
+        }
+
+        public void RunTest(StationTest test, int _order)
+        {
+            order = _order;
+            PlayerPrefs.SetInt(TestOrderKey, order);
             var tcs = new TaskCompletionSource<TestResult>();
             var filter = CreateFilter(test);
             var executionSettings = new ExecutionSettings(filter);
 
-
-            var testCallback = new TestCallback();
-            testCallback.OnTestFinishedEvent += (result) =>
-            {
-                Debug.Log("RunFinished");
-                Debug.Log(result.TestStatus);
-                Debug.Log(result.Message);
-                tcs.SetResult(new TestResult()
-                {
-                    test = test,
-                    isPassed = result.TestStatus == TestStatus.Passed,
-                    errorMessage = result.Message
-                });
-            };
-            testRunner.RegisterCallbacks(testCallback);
-            Debug.Log("Execute");
-
             testRunner.Execute(executionSettings);
-            return tcs.Task;
 
         }
         private Filter CreateFilter(StationTest test)
@@ -86,25 +142,21 @@ namespace TechtrainExtension
 
         public void RunStarted(ITestAdaptor testsToRun)
         {
-            Debug.Log("RunStarted");
             OnRunStartedEvent?.Invoke(testsToRun);
         }
 
         public void RunFinished(ITestResultAdaptor result)
         {
-            Debug.Log("RunFinished");
             OnRunFinishedEvent?.Invoke(result);
         }
 
         public void TestStarted(ITestAdaptor test)
         {
-            Debug.Log("TestStarted");
             OnTestStartedEvent?.Invoke(test);
         }
 
         public void TestFinished(ITestResultAdaptor result)
         {
-            Debug.Log("TestFinished");
             OnTestFinishedEvent?.Invoke(result);
         }
     }
@@ -112,7 +164,7 @@ namespace TechtrainExtension
 
     public class TestResult
     {
-        public StationTest test;
+        public string path;
         public bool isPassed;
         public string? errorMessage;
     }
