@@ -64,7 +64,7 @@ namespace TechtrainExtension.Api
                 email = email,
                 password = password
             };
-            return await CreatePostRequest<Models.v3.LoginBody, Models.v3.Response<Models.v3.LoginResponse>>(baseUrlV3 + "/login", payload);
+            return await CreatePostRequest<Models.v3.LoginBody, Models.v3.Response<Models.v3.LoginResponse>>($"{baseUrlV3}/user/auth/login", payload);
         }
     }
 }
