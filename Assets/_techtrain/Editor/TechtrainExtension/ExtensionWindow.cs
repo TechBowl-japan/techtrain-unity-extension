@@ -17,6 +17,7 @@ namespace TechtrainExtension
 
         public void CreateGUI()
         {
+            //TODO: PlayModeでテストが実行されると初期化されるめ、テストのコールバックをここで受け取る必要がある
             configManager = new Config.ConfigManager();
             apiClient = new Api.Client(configManager.Config);
 
