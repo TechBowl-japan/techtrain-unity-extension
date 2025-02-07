@@ -1,6 +1,8 @@
 #nullable enable
 using System.Threading.Tasks;
 using TechtrainExtension.Api.Models.v3;
+using TechtrainExtension.Manifests.Models;
+using UnityEngine;
 
 namespace TechtrainExtension
 {
@@ -44,6 +46,11 @@ namespace TechtrainExtension
             return apiRailway;
         }
 
+        public Manifests.Models.Station GetManifestStation(int order)
+        {
+            return manifestsManager.GetStation(order);
+        }
+
         public bool IsInitialized()
         {
             return apiRailway != null;
@@ -75,10 +82,15 @@ namespace TechtrainExtension
 
         public RailwayStation? GetCurrentStation()
         {
-            foreach (var station in apiRailway!.railway_stations)
+            if (apiRailway == null)
             {
-                if (station.user_railway_station != null && station.user_railway_station.status != UserRailwayStationStatus.completed)
+                return null;
+            }
+            foreach (var station in apiRailway.railway_stations)
+            {
+                if (station?.user_railway_station != null && station.user_railway_station.status != UserRailwayStationStatus.completed)
                 {
+                    
                     return station;
                 }
             }
@@ -96,6 +108,16 @@ namespace TechtrainExtension
                 return true;
             }
             return isUserPaid;
+        }
+
+        public Station? GetCurrentStationManifest()
+        {
+            var currentStation = GetCurrentStation();
+            if (manifestRailway == null || currentStation == null)
+            {
+                return null;
+            }
+            return GetManifestStation(currentStation.order);
         }
     }
 }
