@@ -12,6 +12,12 @@ namespace TechtrainExtension.Api.Models.v3
         meeting
     }
 
+    public enum RailwayStationAccessLevel
+    {
+        free,
+        paid
+    }
+
     public enum UserRailwayStationStatus
     {
         not_challenging,
@@ -27,7 +33,8 @@ namespace TechtrainExtension.Api.Models.v3
         [JsonConverter(typeof(StringEnumConverter))]
         public RailwayStationConfirmationMethod confirmation_method { get; set; }
         public RailwayStationClearCondition[] railway_station_clear_conditions { get; set; }
-        public string access_level { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public RailwayStationAccessLevel access_level { get; set; }
         public UserRailwayStation? user_railway_station { get; set; }
     }
 

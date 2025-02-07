@@ -8,8 +8,9 @@ namespace TechtrainExtension.Manifests
     public class Manager
     {
         private Railway railway;
+        private static string projectRootPath = Path.Join(Application.dataPath, "..");
 
-        private string manifestRootPath = Path.Join(Application.dataPath, "_techtrain", "manifests");
+        private static string manifestRootPath = Path.Join(projectRootPath, ".techtrain", "manifests");
 
         public Manager() { 
             var railwayPath = Path.Join(manifestRootPath, "railway.json");
