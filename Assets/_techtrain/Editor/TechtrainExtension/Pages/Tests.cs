@@ -13,7 +13,6 @@ namespace TechtrainExtension.Pages
     internal class Tests
     {
         private ExtensionWindow window;
-        private RailwayManager railwayManager;
         private TestRunner testRunner;
 
         private Station? manifestStation;
@@ -25,20 +24,14 @@ namespace TechtrainExtension.Pages
         private VisualElement resultArea;
         private Button showTestRunnerButton;
 
-        internal Tests(ExtensionWindow self, RailwayManager _railwayManager, TestRunner _testRunner)
+        internal Tests(ExtensionWindow self, Station _manifestStation, TestRunner _testRunner, int currentOrder)
         {
             window = self;
-            railwayManager = _railwayManager;
-            var currentStation = railwayManager.GetCurrentStation();
-            if (currentStation == null)
-            {
-                return;
-            }
-            order = _testRunner.order;
-            manifestStation = railwayManager.GetCurrentStationManifest();
+            manifestStation = _manifestStation;
 
             testRunner = _testRunner;
 
+            order = currentOrder;
 
             root = Create();
             runButton = CreateRunButton();
@@ -122,6 +115,5 @@ namespace TechtrainExtension.Pages
             }
             testRunner.RunTest(manifestStation.tests[0], order);
         }
-
     }
 }

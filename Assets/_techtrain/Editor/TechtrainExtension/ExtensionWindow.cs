@@ -69,7 +69,22 @@ namespace TechtrainExtension
                 root.Add(new Label("続きに挑戦するには、有料プランへの登録が必要です。"));
                 return;
             }
-            var tests = new Pages.Tests(this, railwayManager, testRunner);
+            var manifestStation = railwayManager.GetCurrentStationManifest();
+            if (manifestStation == null) {
+                root.Add(new Label("Station情報の取得に失敗しました。時間をおいて再度試すか、運営までお問い合わせください"));
+                root.Add(new Button(() => { this.Reload(); }) { text = "再読み込み" });
+                return;
+            }
+            if (testRunner.isRunning)
+            {
+                await testRunner.WaitForTestResult();
+            }
+            if (testRunner.IsTestSucessful(currentStation.order))
+            {
+                root.Add(new Label("すでにクリアしています！"));
+                return;
+            }
+            var tests = new Pages.Tests(this, manifestStation, testRunner, currentStation.order);
             root.Add(tests.root);
         }
 

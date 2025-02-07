@@ -13,34 +13,48 @@ namespace TechtrainExtension
     internal class TestRunner
     {
         private TestRunnerApi testRunner;
+        private TestCallback testCallback;
 
         internal List<TestResult> results;
         internal int order = 0;
+        internal bool isRestored = true;
+        internal bool isRunning = false;
 
         private const string TestResultKey = "dev.techtrain.TechtrainExtension.TestResult";
         private const string TestOrderKey = "dev.techtrain.TechtrainExtension.TestOrder";
+        private const string TestIsRunningKey = "dev.techtrain.TechtrainExtension.TestIsRunning";
 
         internal TestRunner()
         {
             testRunner = ScriptableObject.CreateInstance<TestRunnerApi>();
             RestoreTestResuts();
 
-
-
-            var testCallback = new TestCallback();
+            testCallback = new TestCallback();
             testCallback.OnRunFinishedEvent += (result) =>
             {
-                if (result == null)
-                {
-                    return;
-                }
                 var parsed = ParseTestResult(result);
                 results = parsed;
+                isRestored = false;
+                isRunning = false;
+                PlayerPrefs.SetInt(TestIsRunningKey, 0);
                 PlayerPrefs.SetString(TestResultKey, JsonConvert.SerializeObject(parsed.ToArray()));
-                Debug.Log(PlayerPrefs.GetString(TestResultKey));
-
             };
             testRunner.RegisterCallbacks(testCallback);
+        }
+
+        internal Task WaitForTestResult()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            if (!isRunning)
+            {
+                tcs.SetResult(true);
+                return tcs.Task;
+            }
+            testCallback.OnRunFinishedEvent += (result) =>
+            {
+                tcs.SetResult(true);
+            };
+            return tcs.Task;
         }
 
         private void RestoreTestResuts()
@@ -51,6 +65,7 @@ namespace TechtrainExtension
                 try
                 {
                     results = JsonConvert.DeserializeObject<List<TestResult>>(testResults);
+                    order = PlayerPrefs.GetInt(TestOrderKey);
                 }
                 catch (Exception e)
                 {
@@ -63,6 +78,7 @@ namespace TechtrainExtension
             {
                 results = new List<TestResult>();
             }
+            isRunning = PlayerPrefs.GetInt(TestIsRunningKey) == 1;
         }
 
         static List<TestResult> ParseTestResult(ITestResultAdaptor result, string path = "", List<TestResult> parsed = null)
@@ -92,6 +108,8 @@ namespace TechtrainExtension
         {
             order = _order;
             PlayerPrefs.SetInt(TestOrderKey, order);
+            isRunning = true;
+            PlayerPrefs.SetInt(TestIsRunningKey, 1);
             var tcs = new TaskCompletionSource<TestResult>();
             var filter = CreateFilter(test);
             var executionSettings = new ExecutionSettings(filter);
@@ -130,6 +148,15 @@ namespace TechtrainExtension
                 testMode = TestMode.PlayMode,
                 testNames = new[] { test.command }
             };
+        }
+
+        internal bool IsTestSucessful(int order)
+        {
+            return
+                this.order == order &&
+                results != null &&
+                results.Count > 0 &&
+                results.All(r => r.isPassed);
         }
     }
 
