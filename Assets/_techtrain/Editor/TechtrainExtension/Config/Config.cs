@@ -17,5 +17,6 @@ namespace TechtrainExtension.Config
     public class ConfigAuthentication
     {
         public string? apiToken { get; set; }
+        public string? apiRefreshToken { get; set; }
     }
 }
