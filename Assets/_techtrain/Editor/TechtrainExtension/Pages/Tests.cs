@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEditor.TestTools.TestRunner;
+using UnityEditor;
 
 namespace TechtrainExtension.Pages
 {
@@ -73,9 +74,15 @@ namespace TechtrainExtension.Pages
             {
                 var resultElement = new HelpBox()
                 {
-                    messageType = result.isPassed ? HelpBoxMessageType.Info : HelpBoxMessageType.Error,
+                    messageType = HelpBoxMessageType.None
                 };
                 resultElement.AddToClassList("result");
+                var icon = new Image()
+                {
+                    image = result.isPassed ? EditorGUIUtility.IconContent("TestPassed").image : EditorGUIUtility.IconContent("TestFailed").image,
+                    style = { width = 32, height = 32 }
+                };
+                resultElement.Add(icon);
                 var container = new VisualElement();
                 var summary = result.isPassed ? "Passed" : "Failed";
                 var testLabel = new Label($"{result.path} {summary}");
