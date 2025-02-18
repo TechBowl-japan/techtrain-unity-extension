@@ -76,7 +76,7 @@ namespace TechtrainExtension
                 root.Add(new Button(() => { this.Reload(); }) { text = "再読み込み" });
                 return;
             }
-            if (manifestStation.tests.Count() > 1 || !manifestStation.tests.All((test)=>test.type != "unity"))
+            if (manifestStation.tests.Count() > 1 || !manifestStation.tests.All((test)=>test.type == "unity"))
             {
                 root.Add(new Label("このStationは自動テストではないためUnity上でクリア判定が行えません。ブラウザ上から判定を行ってください"));
                 return;
