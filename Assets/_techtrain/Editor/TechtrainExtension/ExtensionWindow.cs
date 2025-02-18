@@ -39,26 +39,33 @@ namespace TechtrainExtension
             {
                 return;
             }
+            var label = new Label("Railway情報を読み込んでいます...");
+            root.Add(label);
             railwayManager = new RailwayManager(apiClient, false);
             await railwayManager.Initialize();
             if (railwayManager.IsClearAllStations())
             {
+                root.Clear();
                 root.Add(new Label("このRailwayのすべてのStationをクリアしました！お疲れ様でした。"));
                 return;
             }
             if (!railwayManager.IsAlreadyChallenging())
             {
+                root.Clear();
                 root.Add(new Label("このRailwayに挑戦する場合はブラウザ上から挑戦ボタンを押してください"));
                 root.Add(new Button(() => { this.Reload(); }) { text = "再読み込み" });
                 return;
             }
+            label.text = "Station情報を読み込んでいます...";
             var currentStation = railwayManager.GetCurrentStation();
             if (currentStation == null)
             {
+                root.Clear();
                 root.Add(new Label("Station情報の取得に失敗しました。時間をおいて再度試すか、運営までお問い合わせください"));
                 root.Add(new Button(() => { this.Reload(); }) { text = "再読み込み" });
                 return;
             }
+            root.Clear();
             root.Add(new Label($"挑戦中のStation: {currentStation.title}"));
             if (currentStation.confirmation_method != Api.Models.v3.RailwayStationConfirmationMethod.unit_test)
             {
