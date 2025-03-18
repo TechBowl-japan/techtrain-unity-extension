@@ -32,16 +32,7 @@ namespace TechtrainExtension.Config
 
         public ConfigManager()
         {
-            var configPath = ResolveConfigPath();
-            if (!File.Exists(configPath))
-            {
-                Config = new Config();
-                Toml.WriteFile(Config, configPath);
-            }
-            else
-            {
-                Config = Toml.ReadFile<Config>(configPath);
-            }
+            Config = LoadOrCreateConfig();
         }
 
         public void Save()
@@ -58,14 +49,28 @@ namespace TechtrainExtension.Config
 
         public void Reload()
         {
-            var configPath = ResolveConfigPath();
-            Config = Toml.ReadFile<Config>(configPath);
+            Config = LoadOrCreateConfig();
         }
 
         public void SetApiToken(string token)
         {
             Config.auth.apiToken = token;
             Save();
+        }
+
+        private Config LoadOrCreateConfig()
+        {
+            var configPath = ResolveConfigPath();
+            if (!File.Exists(configPath))
+            {
+                var config = new Config();
+                Toml.WriteFile(config, configPath);
+                return config;
+            }
+            else
+            {
+                return Toml.ReadFile<Config>(configPath);
+            }
         }
     }
 }
