@@ -43,7 +43,5 @@ namespace TechtrainExtension
             var wnd = GetWindow<ExtensionWindow>();
             wnd.titleContent = new GUIContent("Techtrain");
         }
-
     }
-
 }
