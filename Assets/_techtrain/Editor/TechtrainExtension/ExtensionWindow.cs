@@ -18,7 +18,7 @@ namespace TechtrainExtension
         public void CreateGUI()
         {
             configManager = new Config.ConfigManager();
-            apiClient = new Api.Client(configManager.Config);
+            apiClient = new Api.Client(configManager);
 
             root = new VisualElement();
             root.styleSheets.Add(styleSheet);
@@ -38,31 +38,31 @@ namespace TechtrainExtension
             await railwayManager.Initialize();
             if (railwayManager.IsClearAllStations())
             {
-                root.Add(new Label("‚±‚ÌRailway‚Ì‚·‚×‚Ä‚ÌStation‚ğƒNƒŠƒA‚µ‚Ü‚µ‚½I‚¨”æ‚ê—l‚Å‚µ‚½B"));
+                root.Add(new Label("ã“ã®Railwayã®ã™ã¹ã¦ã®Stationã‚’ã‚¯ãƒªã‚¢ã—ã¾ã—ãŸï¼ãŠç–²ã‚Œæ§˜ã§ã—ãŸã€‚"));
                 return;
             }
             if (!railwayManager.IsAlreadyChallenging())
             {
-                root.Add(new Label("‚±‚ÌRailway‚É’§í‚·‚éê‡‚Íƒuƒ‰ƒEƒUã‚©‚ç’§íƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚Ä‚­‚¾‚³‚¢"));
-                root.Add(new Button(() => { this.Reload(); }) { text = "Ä“Ç‚İ‚İ" });
+                root.Add(new Label("ã“ã®Railwayã«æŒ‘æˆ¦ã™ã‚‹å ´åˆã¯ãƒ–ãƒ©ã‚¦ã‚¶ä¸Šã‹ã‚‰æŒ‘æˆ¦ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ã¦ãã ã•ã„"));
+                root.Add(new Button(() => { this.Reload(); }) { text = "å†èª­ã¿è¾¼ã¿" });
                 return;
             }
             var currentStation = railwayManager.GetCurrentStation();
             if (currentStation == null)
             {
-                root.Add(new Label("Stationî•ñ‚Ìæ“¾‚É¸”s‚µ‚Ü‚µ‚½BŠÔ‚ğ‚¨‚¢‚ÄÄ“x‚·‚©A‰^‰c‚Ü‚Å‚¨–â‚¢‡‚í‚¹‚­‚¾‚³‚¢"));
-                root.Add(new Button(() => { this.Reload(); }) { text = "Ä“Ç‚İ‚İ" });
+                root.Add(new Label("Stationæƒ…å ±ã®å–å¾—ã«å¤±æ•—ã—ã¾ã—ãŸã€‚æ™‚é–“ã‚’ãŠã„ã¦å†åº¦è©¦ã™ã‹ã€é‹å–¶ã¾ã§ãŠå•ã„åˆã‚ã›ãã ã•ã„"));
+                root.Add(new Button(() => { this.Reload(); }) { text = "å†èª­ã¿è¾¼ã¿" });
                 return;
             }
-            root.Add(new Label($"’§í’†‚ÌStation: {currentStation.title}"));
+            root.Add(new Label($"æŒ‘æˆ¦ä¸­ã®Station: {currentStation.title}"));
             if (currentStation.confirmation_method != Api.Models.v3.RailwayStationConfirmationMethod.unit_test)
             {
-                root.Add(new Label("‚±‚ÌStation‚Í©“®ƒeƒXƒg‚Å‚Í‚È‚¢‚½‚ßUnityã‚ÅƒNƒŠƒA”»’è‚ªs‚¦‚Ü‚¹‚ñBƒuƒ‰ƒEƒUã‚©‚ç”»’è‚ğs‚Á‚Ä‚­‚¾‚³‚¢"));
+                root.Add(new Label("ã“ã®Stationã¯è‡ªå‹•ãƒ†ã‚¹ãƒˆã§ã¯ãªã„ãŸã‚Unityä¸Šã§ã‚¯ãƒªã‚¢åˆ¤å®šãŒè¡Œãˆã¾ã›ã‚“ã€‚ãƒ–ãƒ©ã‚¦ã‚¶ä¸Šã‹ã‚‰åˆ¤å®šã‚’è¡Œã£ã¦ãã ã•ã„"));
                 return;
             }
             if (!railwayManager.IsStationPermitted(currentStation))
             {
-                root.Add(new Label("‘±‚«‚É’§í‚·‚é‚É‚ÍA—L—¿ƒvƒ‰ƒ“‚Ö‚Ì“o˜^‚ª•K—v‚Å‚·B"));
+                root.Add(new Label("ç¶šãã«æŒ‘æˆ¦ã™ã‚‹ã«ã¯ã€æœ‰æ–™ãƒ—ãƒ©ãƒ³ã¸ã®ç™»éŒ²ãŒå¿…è¦ã§ã™ã€‚"));
                 return;
             }
 
@@ -77,8 +77,8 @@ namespace TechtrainExtension
             }
             root.Clear();
             configManager.Reload();
-            apiClient = new Api.Client(configManager.Config);
-
+            apiClient = new Api.Client(configManager);
+            
             _ = InitializePage();
         }
 
@@ -88,7 +88,5 @@ namespace TechtrainExtension
             var wnd = GetWindow<ExtensionWindow>();
             wnd.titleContent = new GUIContent("Techtrain");
         }
-
     }
-
 }
