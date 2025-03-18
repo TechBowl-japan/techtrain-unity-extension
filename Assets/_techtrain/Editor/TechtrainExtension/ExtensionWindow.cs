@@ -34,7 +34,7 @@ namespace TechtrainExtension
 
         private async Task InitializePage()
         {
-            if (apiClient == null || root == null)
+            if (apiClient == null || root == null || configManager == null || testRunner == null)
             {
                 return;
             }

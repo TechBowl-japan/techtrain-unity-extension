@@ -43,12 +43,12 @@ namespace TechtrainExtension
             return manifestRailway;
         }
 
-        public Railway? GetApiRailway()
+        public Api.Models.v3.Railway? GetApiRailway()
         {
             return apiRailway;
         }
 
-        public Manifests.Models.Station GetManifestStation(int order)
+        public Manifests.Models.Station? GetManifestStation(int order)
         {
             return manifestsManager.GetStation(order);
         }

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Threading.Tasks;
 using TechtrainExtension.Manifests.Models;
@@ -27,6 +29,7 @@ namespace TechtrainExtension
         internal TestRunner()
         {
             testRunner = ScriptableObject.CreateInstance<TestRunnerApi>();
+            results = new List<TestResult>();
             RestoreTestResuts();
 
             testCallback = new TestCallback();
@@ -64,10 +67,16 @@ namespace TechtrainExtension
             {
                 try
                 {
-                    results = JsonConvert.DeserializeObject<List<TestResult>>(testResults);
+                    var _result = JsonConvert.DeserializeObject<List<TestResult>>(testResults);
+                    if (_result == null)
+                    {
+                        throw new Exception("Failed to parse test results");
+                    }
+                    results = _result;
                 }
                 catch (Exception e)
                 {
+                    Debug.LogWarning($"Failed to restore test results: {e.Message}");
                     PlayerPrefs.DeleteKey(TestResultKey);
                     PlayerPrefs.DeleteKey(TestOrderKey);
                     results = new List<TestResult>();
@@ -89,7 +98,7 @@ namespace TechtrainExtension
             PlayerPrefs.DeleteKey(TestIsRunningKey);
         }
 
-        static List<TestResult> ParseTestResult(ITestResultAdaptor result, string path = "", List<TestResult> parsed = null)
+        static List<TestResult> ParseTestResult(ITestResultAdaptor result, string path = "", List<TestResult>? parsed = null)
         {
             if (parsed == null)
             {
@@ -127,6 +136,10 @@ namespace TechtrainExtension
         }
         private Filter CreateFilter(StationTest test)
         {
+            if (test.command == null)
+            {
+                throw new Exception("Test command is not set");
+            }
             if (test.command.StartsWith("category:"))
             {
                 return new Filter()
@@ -199,7 +212,7 @@ namespace TechtrainExtension
 
     public class TestResult
     {
-        public string path;
+        public string? path;
         public bool isPassed;
         public string? errorMessage;
     }
