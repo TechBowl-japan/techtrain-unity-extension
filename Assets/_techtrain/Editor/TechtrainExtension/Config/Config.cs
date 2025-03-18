@@ -18,5 +18,6 @@ namespace TechtrainExtension.Config
     {
         public string? apiToken { get; set; }
         public string? apiRefreshToken { get; set; }
+        public string? apiAuthCookieName { get; set; }
     }
 }
