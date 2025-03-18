@@ -1,7 +1,6 @@
 #nullable enable
 
 using UnityEngine.UIElements;
-using UnityEngine;
 
 namespace TechtrainExtension.Pages
 {
