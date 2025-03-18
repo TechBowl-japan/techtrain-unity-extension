@@ -16,7 +16,7 @@ namespace TechtrainExtension
         public void CreateGUI()
         {
             configManager = new Config.ConfigManager();
-            apiClient = new Api.Client(configManager.Config);
+            apiClient = new Api.Client(configManager);
             root = new VisualElement();
             root.styleSheets.Add(styleSheet);
             root.AddToClassList("root");
@@ -40,7 +40,7 @@ namespace TechtrainExtension
         {
             root.Clear();
             configManager.Reload();
-            apiClient = new Api.Client(configManager.Config);
+            apiClient = new Api.Client(configManager);
             _ = InitializePage();
         }
 
@@ -57,5 +57,4 @@ namespace TechtrainExtension
             return (response?.data.is_maintenance ?? true);
         }
     }
-
 }
