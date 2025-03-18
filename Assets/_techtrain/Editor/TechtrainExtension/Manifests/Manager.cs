@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.IO;
 using Newtonsoft.Json;
 using TechtrainExtension.Manifests.Models;
@@ -14,7 +16,12 @@ namespace TechtrainExtension.Manifests
 
         public Manager() { 
             var railwayPath = Path.Join(manifestRootPath, "railway.json");
-            railway = ReadJon<Railway>(railwayPath);
+            var _railway = ReadJon<Railway>(railwayPath);
+            if (_railway == null)
+            {
+                throw new System.Exception("Failed to read railway.json");
+            }
+            railway = _railway;
         }
 
         public Railway GetRailway()
@@ -22,9 +29,9 @@ namespace TechtrainExtension.Manifests
             return railway;
         }
 
-        public Station GetStation(int order)
+        public Station? GetStation(int order)
         {
-            if (!railway.railway.TryGetValue(order.ToString(), out var stationFileName))
+            if (railway.railway == null || !railway.railway.TryGetValue(order.ToString(), out var stationFileName))
             {
                 return null;
             }
@@ -34,7 +41,7 @@ namespace TechtrainExtension.Manifests
             return ReadJon<Station>(stationPath);
         }
 
-        private T ReadJon<T>(string path)
+        private T? ReadJon<T>(string path)
         {
             using (var sr = new StreamReader(path, System.Text.Encoding.UTF8))
             {

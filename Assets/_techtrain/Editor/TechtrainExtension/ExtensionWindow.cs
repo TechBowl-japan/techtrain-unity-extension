@@ -9,7 +9,7 @@ namespace TechtrainExtension
 {
     public class ExtensionWindow : EditorWindow
     {
-        [SerializeField] private StyleSheet styleSheet;
+        [SerializeField] private StyleSheet? styleSheet;
         internal Config.ConfigManager? configManager;
         internal Api.Client? apiClient;
         internal RailwayManager? railwayManager;

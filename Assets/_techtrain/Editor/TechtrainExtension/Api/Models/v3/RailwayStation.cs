@@ -27,12 +27,12 @@ namespace TechtrainExtension.Api.Models.v3
 
     public class RailwayStation
     {
-        public string title { get; set; }
-        public string sub_title { get; set; }
-        public string description { get; set; }
+        public string? title { get; set; }
+        public string? sub_title { get; set; }
+        public string? description { get; set; }
         [JsonConverter(typeof(StringEnumConverter))]
         public RailwayStationConfirmationMethod confirmation_method { get; set; }
-        public RailwayStationClearCondition[] railway_station_clear_conditions { get; set; }
+        public RailwayStationClearCondition[]? railway_station_clear_conditions { get; set; }
         [JsonConverter(typeof(StringEnumConverter))]
         public RailwayStationAccessLevel access_level { get; set; }
         public UserRailwayStation? user_railway_station { get; set; }
@@ -41,7 +41,7 @@ namespace TechtrainExtension.Api.Models.v3
     public class RailwayStationClearCondition
     {
         public int id { get; set; }
-        public string contents { get; set; }
+        public string? contents { get; set; }
     }
 
     public class UserRailwayStation
