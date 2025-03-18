@@ -11,7 +11,7 @@ namespace TechtrainExtension
     public class RailwayManager
     {
         private Manifests.Manager manifestsManager;
-        private Manifests.Models.Railway? manifestRailway;
+        private Manifests.Models.Railway manifestRailway;
 
         private Api.Client apiClient;
         private Api.Models.v3.Railway? apiRailway;
@@ -22,15 +22,15 @@ namespace TechtrainExtension
         public RailwayManager(Api.Client _apiClient, bool _isUserPaid)
         {
             manifestsManager = new Manifests.Manager();
+            manifestRailway = manifestsManager.GetRailway();
             apiClient = _apiClient;
             isUserPaid = _isUserPaid;
         }
 
         public async Task<bool> Initialize()
         {
-            manifestRailway = manifestsManager.GetRailway();
             var response = await apiClient.GetRailway(manifestRailway.railwayId);
-            if (response == null)
+            if (response == null || response.data == null)
             {
                 return false;
             }
@@ -43,7 +43,7 @@ namespace TechtrainExtension
             return manifestRailway;
         }
 
-        public Api.Models.v3.Railway GetApiRailway()
+        public Railway? GetApiRailway()
         {
             return apiRailway;
         }
@@ -74,7 +74,7 @@ namespace TechtrainExtension
 
         public bool IsAlreadyChallenging()
         {
-            if (apiRailway == null || apiRailway.railway_stations.Length == 0)
+            if (apiRailway == null || apiRailway.railway_stations == null || apiRailway.railway_stations.Length == 0)
             {
                 return false;
             }
@@ -84,7 +84,7 @@ namespace TechtrainExtension
 
         public RailwayStation? GetCurrentStation()
         {
-            if (apiRailway == null)
+            if (apiRailway == null || apiRailway.railway_stations == null)
             {
                 return null;
             }

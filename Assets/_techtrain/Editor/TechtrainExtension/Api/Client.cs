@@ -2,9 +2,6 @@
 
 using System.Net.Http;
 using System.Threading.Tasks;
-using Unity.VisualScripting.FullSerializer;
-using UnityEditor.VersionControl;
-using UnityEngine;
 using Newtonsoft.Json;
 using System;
 using TechtrainExtension.Config;

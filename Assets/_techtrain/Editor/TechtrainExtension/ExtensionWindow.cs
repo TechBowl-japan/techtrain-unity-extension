@@ -10,8 +10,7 @@ namespace TechtrainExtension
 {
     public class ExtensionWindow : EditorWindow
     {
-        [SerializeField] private StyleSheet styleSheet;
-
+        [SerializeField] private StyleSheet? styleSheet;
         internal Config.ConfigManager? configManager;
         internal Api.Client? apiClient;
         internal RailwayManager? railwayManager;
@@ -22,7 +21,7 @@ namespace TechtrainExtension
         public void CreateGUI()
         {
             configManager = new Config.ConfigManager();
-            apiClient = new Api.Client(configManager.Config);
+            apiClient = new Api.Client(configManager);
             testRunner = new TestRunner();
 
             root = new VisualElement();
@@ -111,8 +110,8 @@ namespace TechtrainExtension
             }
             root.Clear();
             configManager.Reload();
-            apiClient = new Api.Client(configManager.Config);
-
+            apiClient = new Api.Client(configManager);
+            
             _ = InitializePage();
         }
 
@@ -122,7 +121,5 @@ namespace TechtrainExtension
             var wnd = GetWindow<ExtensionWindow>();
             wnd.titleContent = new GUIContent("Techtrain");
         }
-
     }
-
 }
