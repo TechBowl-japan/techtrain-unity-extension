@@ -54,7 +54,7 @@ namespace TechtrainExtension.Pages
         {
             var runButton = new Button(() => RunTests())
             {
-                text = "ï¿½Å‚ï¿½ï¿½ï¿½ï¿½I"
+                text = "¤Ç¤­¤¿¡ª"
             };
             return runButton;
         }
@@ -66,7 +66,7 @@ namespace TechtrainExtension.Pages
 
             if (testRunner.results == null || testRunner.results.Count == 0 || testRunner.order != order)
             {
-                resultArea.Add(new Label("ï¿½uï¿½Å‚ï¿½ï¿½ï¿½ï¿½Iï¿½vï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äƒeï¿½Xï¿½gï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½å‚¤"));
+                resultArea.Add(new Label("¥Æ¥¹¥È¤ò¼Â¹Ô¤·¤Æ¤¯¤À¤µ¤¤"));
                 return resultArea;
             }
 
@@ -104,7 +104,7 @@ namespace TechtrainExtension.Pages
         {
             return new Button(() => ShowTestRunner())
             {
-                text = "ï¿½eï¿½Xï¿½gï¿½ï¿½ï¿½ï¿½ï¿½iï¿½[ï¿½ï¿½ï¿½Jï¿½ï¿½"
+                text = "¥Æ¥¹¥È¥é¥ó¥Ê¡¼¤ò³«¤¯"
             };
         }
 
