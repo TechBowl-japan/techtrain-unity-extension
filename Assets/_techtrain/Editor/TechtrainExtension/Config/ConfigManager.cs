@@ -52,7 +52,7 @@ namespace TechtrainExtension.Config
             Config = LoadOrCreateConfig();
         }
 
-        public void SetApiToken(string token)
+        public void SetApiToken(string? token)
         {
             Config.auth.apiToken = token;
             Save();
