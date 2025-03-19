@@ -2,9 +2,6 @@
 
 using System.Net.Http;
 using System.Threading.Tasks;
-using Unity.VisualScripting.FullSerializer;
-using UnityEditor.VersionControl;
-using UnityEngine;
 using Newtonsoft.Json;
 using TechtrainExtension.Config;
 
@@ -84,6 +81,11 @@ namespace TechtrainExtension.Api
             if (ensureSuccess) response.EnsureSuccessStatusCode();
             var responseJson = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<U>(responseJson);
+        }
+
+        public async Task<Models.v3.Response<Models.v3.Railway>?> GetRailway(int railwayId)
+        {
+            return await CreateGetRequest<Models.v3.Response<Models.v3.Railway>>($"{baseUrlV3}/techtrain/user/railways/{railwayId}");
         }
 
         public async Task<Models.v3.Response<Models.v3.LoginResponse>?> PostLogin(string email, string password)
