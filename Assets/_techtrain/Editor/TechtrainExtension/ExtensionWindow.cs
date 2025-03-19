@@ -34,6 +34,13 @@ namespace TechtrainExtension
                 root.Add(maintenance.root);
                 return;
             }
+
+            if (!await IsLoggedIn())
+            {
+                var login = new Pages.Login(this);
+                root.Add(login.root);
+                return;
+            }
         }
 
         internal void Reload()
@@ -42,6 +49,16 @@ namespace TechtrainExtension
             configManager.Reload();
             apiClient = new Api.Client(configManager);
             _ = InitializePage();
+        }
+
+        private async Task<bool> IsLoggedIn()
+        {
+            if (configManager.Config.auth.apiToken == null) return false;
+            var user = await apiClient.PostUsersMe();
+            if (user == null || user.data == null){ 
+                return false;
+            }
+            return true;
         }
 
         [MenuItem("Tools/Techtrain")]
