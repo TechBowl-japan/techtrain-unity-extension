@@ -54,7 +54,7 @@ namespace TechtrainExtension.Pages
         {
             var runButton = new Button(() => RunTests())
             {
-                text = "�Ǥ�����"
+                text = "できた！"
             };
             return runButton;
         }
@@ -66,7 +66,7 @@ namespace TechtrainExtension.Pages
 
             if (testRunner.results == null || testRunner.results.Count == 0 || testRunner.order != order)
             {
-                resultArea.Add(new Label("�ƥ��Ȥ�¹Ԥ��Ƥ�������"));
+                resultArea.Add(new Label("テストを実行してください"));
                 return resultArea;
             }
 
@@ -104,7 +104,7 @@ namespace TechtrainExtension.Pages
         {
             return new Button(() => ShowTestRunner())
             {
-                text = "�ƥ��ȥ��ʡ��򳫤�"
+                text = "テストランナーを開く"
             };
         }
 
