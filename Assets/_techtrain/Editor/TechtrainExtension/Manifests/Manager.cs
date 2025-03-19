@@ -31,7 +31,7 @@ namespace TechtrainExtension.Manifests
 
         public Station? GetStation(int order)
         {
-            if (railway.railway == null || !railway.railway.TryGetValue(order.ToString(), out var stationFileName))
+            if (railway.stations == null || !railway.stations.TryGetValue(order.ToString(), out var stationFileName))
             {
                 return null;
             }

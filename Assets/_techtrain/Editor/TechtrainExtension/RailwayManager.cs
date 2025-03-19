@@ -1,6 +1,10 @@
 #nullable enable
+using NUnit.Framework;
 using System.Threading.Tasks;
 using TechtrainExtension.Api.Models.v3;
+using TechtrainExtension.Manifests.Models;
+using UnityEngine;
+using System.Collections.Generic;
 
 namespace TechtrainExtension
 {
@@ -39,9 +43,14 @@ namespace TechtrainExtension
             return manifestRailway;
         }
 
-        public Railway? GetApiRailway()
+        public Api.Models.v3.Railway? GetApiRailway()
         {
             return apiRailway;
+        }
+
+        public Manifests.Models.Station? GetManifestStation(int order)
+        {
+            return manifestsManager.GetStation(order);
         }
 
         public bool IsInitialized()
@@ -81,8 +90,9 @@ namespace TechtrainExtension
             }
             foreach (var station in apiRailway.railway_stations)
             {
-                if (station.user_railway_station != null && station.user_railway_station.status != UserRailwayStationStatus.completed)
+                if (station?.user_railway_station != null && station.user_railway_station.status != UserRailwayStationStatus.completed)
                 {
+                    
                     return station;
                 }
             }
@@ -100,6 +110,42 @@ namespace TechtrainExtension
                 return true;
             }
             return isUserPaid;
+        }
+
+        public Station? GetCurrentStationManifest()
+        {
+            var currentStation = GetCurrentStation();
+            if (manifestRailway == null || currentStation == null)
+            {
+                return null;
+            }
+            return GetManifestStation(currentStation.order);
+        }
+
+        internal async Task ReportTestResult(int order, TestRunner runner)
+        {
+            if (apiRailway == null || runner.isRestored)
+            {
+                return;
+            }
+            string error = "";
+            foreach(var result in runner.results)
+            {
+                if (result.isPassed != true)
+                {
+                    error += $"{result.path}\n{result.errorMessage}\n";
+                }
+            }
+
+            var body = new Api.Models.v3.StationClearJudgementBody()
+            {
+                order = order,
+                is_clear = runner.IsTestSucessful(order),
+                error_content = error
+            };
+
+
+            var response = await apiClient.PostStationClearJudgement(apiRailway.id, body);
         }
     }
 }
