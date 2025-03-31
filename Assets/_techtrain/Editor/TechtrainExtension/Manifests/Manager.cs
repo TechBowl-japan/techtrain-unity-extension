@@ -14,7 +14,8 @@ namespace TechtrainExtension.Manifests
 
         private static string manifestRootPath = Path.Join(projectRootPath, ".techtrain", "manifests");
 
-        public Manager() { 
+        public Manager()
+        {
             var railwayPath = Path.Join(manifestRootPath, "railway.json");
             var _railway = ReadJon<Railway>(railwayPath);
             if (_railway == null)

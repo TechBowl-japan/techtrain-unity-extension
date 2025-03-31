@@ -104,7 +104,7 @@ namespace TechtrainExtension
             {
                 parsed = new List<TestResult>();
             }
-            if (result.Children == null || result.Children.Count()< 1)
+            if (result.Children == null || result.Children.Count() < 1)
             {
                 parsed.Add(new TestResult()
                 {
