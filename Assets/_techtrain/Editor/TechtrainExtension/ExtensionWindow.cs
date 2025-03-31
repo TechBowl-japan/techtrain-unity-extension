@@ -38,6 +38,13 @@ namespace TechtrainExtension
             {
                 return;
             }
+            var isMaintenance = await IsMaintenance();
+            if (isMaintenance)
+            {
+                var maintenance = new Pages.Maintenance(this);
+                root.Add(maintenance.root);
+                return;
+            }
 
             if (!await IsLoggedIn())
             {
@@ -139,6 +146,12 @@ namespace TechtrainExtension
         {
             var wnd = GetWindow<ExtensionWindow>();
             wnd.titleContent = new GUIContent("Techtrain");
+        }
+
+        private async Task<bool> IsMaintenance()
+        {
+            var response = await apiClient.GetIsMaintenance();
+            return (response?.data.is_maintenance ?? true);
         }
     }
 }
