@@ -25,7 +25,7 @@ namespace TechtrainExtension.Pages
         }
         private Label CreateMessageLabel()
         {
-            return new Label("Œ»Ýƒƒ“ƒeƒiƒ“ƒX’†‚Å‚·BáŠQ‚ª”­¶‚µ‚Ä‚¢‚éê‡‚Í X (@TechBowl1) ‚É‚Äó‹µ‚ð”zM‚³‚¹‚Ä‚¢‚½‚¾‚«‚Ü‚·B");
+            return new Label("ç¾åœ¨ãƒ¡ãƒ³ãƒ†ãƒŠãƒ³ã‚¹ä¸­ã§ã™ã€‚\néšœå®³ãŒç™ºç”Ÿã—ã¦ã„ã‚‹å ´åˆã¯ X (@TechBowl1) ã«ã¦çŠ¶æ³ã‚’é…ä¿¡ã•ã›ã¦ã„ãŸã ãã¾ã™ã€‚");
         }
     }
 }
