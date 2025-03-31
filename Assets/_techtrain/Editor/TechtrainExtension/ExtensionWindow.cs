@@ -56,7 +56,15 @@ namespace TechtrainExtension
             var label = new Label("Railway情報を読み込んでいます...");
             root.Add(label);
 
-            railwayManager = new RailwayManager(apiClient, false);
+            try{
+                railwayManager = new RailwayManager(apiClient, false);
+            }catch(System.Exception e){
+                Debug.LogError(e);
+                root.Clear();
+                root.Add(new Label("Railway情報の取得に失敗しました。時間をおいて再度試すか、運営までお問い合わせください"));
+                root.Add(new Button(() => { this.Reload(); }) { text = "再読み込み" });
+                return;
+            }
             await railwayManager.Initialize();
             if (railwayManager.IsClearAllStations())
             {
