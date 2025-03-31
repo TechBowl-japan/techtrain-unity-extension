@@ -58,7 +58,7 @@ namespace TechtrainExtension.Pages
 
         private Button CreateLoginButton()
         {
-            return new Button(async() =>
+            return new Button(async () =>
             {
                 SetInputEnabled(false);
                 ClearError();
@@ -70,7 +70,7 @@ namespace TechtrainExtension.Pages
                     window.Reload();
                     return;
                 }
-                if(task != null)
+                if (task != null)
                 {
                     ShowError($"ログインに失敗しました\n{task.message}");
                 }

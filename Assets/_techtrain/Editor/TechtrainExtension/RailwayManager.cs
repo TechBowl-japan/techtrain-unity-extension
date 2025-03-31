@@ -92,7 +92,7 @@ namespace TechtrainExtension
             {
                 if (station?.user_railway_station != null && station.user_railway_station.status != UserRailwayStationStatus.completed)
                 {
-                    
+
                     return station;
                 }
             }
@@ -129,7 +129,7 @@ namespace TechtrainExtension
                 return;
             }
             string error = "";
-            foreach(var result in runner.results)
+            foreach (var result in runner.results)
             {
                 if (result.isPassed != true)
                 {

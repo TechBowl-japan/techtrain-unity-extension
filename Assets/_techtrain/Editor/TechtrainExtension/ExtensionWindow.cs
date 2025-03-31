@@ -56,9 +56,12 @@ namespace TechtrainExtension
             var label = new Label("Railway情報を読み込んでいます...");
             root.Add(label);
 
-            try{
+            try
+            {
                 railwayManager = new RailwayManager(apiClient, false);
-            }catch(System.Exception e){
+            }
+            catch (System.Exception e)
+            {
                 Debug.LogError(e);
                 root.Clear();
                 root.Add(new Label("Railway情報の取得に失敗しました。時間をおいて再度試すか、運営までお問い合わせください"));
@@ -101,12 +104,13 @@ namespace TechtrainExtension
                 return;
             }
             var manifestStation = railwayManager.GetCurrentStationManifest();
-            if (manifestStation == null) {
+            if (manifestStation == null)
+            {
                 root.Add(new Label("Station情報の取得に失敗しました。時間をおいて再度試すか、運営までお問い合わせください"));
                 root.Add(new Button(() => { this.Reload(); }) { text = "再読み込み" });
                 return;
             }
-            if (manifestStation.tests.Count() > 1 || !manifestStation.tests.All((test)=>test.type == "unity"))
+            if (manifestStation.tests.Count() > 1 || !manifestStation.tests.All((test) => test.type == "unity"))
             {
                 root.Add(new Label("このStationは自動テストではないためUnity上でクリア判定が行えません。ブラウザ上から判定を行ってください"));
                 return;
@@ -135,7 +139,7 @@ namespace TechtrainExtension
             root.Clear();
             configManager.Reload();
             apiClient = new Api.Client(configManager);
-            
+
             _ = InitializePage();
         }
 
@@ -143,7 +147,8 @@ namespace TechtrainExtension
         {
             if (configManager.Config.auth.apiToken == null) return false;
             var user = await apiClient.PostUsersMe();
-            if (user == null || user.data == null){ 
+            if (user == null || user.data == null)
+            {
                 return false;
             }
             return true;
