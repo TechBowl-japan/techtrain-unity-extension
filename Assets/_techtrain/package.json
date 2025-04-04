@@ -9,5 +9,8 @@
   },
   "gitDependencies": {
     "com.github-glitchenzo.nugetforunity": "https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity#v4.3.0"
+  },
+  "nugetDependencies": {
+    "Nett": "0.15.0"
   }
 }
