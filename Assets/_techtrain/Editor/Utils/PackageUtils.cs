@@ -6,7 +6,8 @@ namespace TechtrainExtension.Utils
 {
     public static class PackageUtils
     {
-        private static string FindPackageRoot(){
+        private static string FindPackageRoot()
+        {
             // Find the PackageUtils script by name using AssetDatabase
             string[] guids = AssetDatabase.FindAssets($"t:MonoScript {typeof(PackageUtils).Name}");
 
