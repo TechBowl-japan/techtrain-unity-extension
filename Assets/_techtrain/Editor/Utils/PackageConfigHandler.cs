@@ -178,28 +178,27 @@ namespace TechtrainExtension.Utils
 
         private static bool IsDllInstalled(string packageName)
         {
-            // Option 1: Check in NuGet package directory
-            string packageDir = Path.Combine(NugetPackagesDir, packageName);
-            if (Directory.Exists(packageDir))
+            // Check if the DLL is recognized in AssetDatabase with NuGetForUnity label
+            string[] guids = AssetDatabase.FindAssets($"{packageName} l:NuGetForUnity");
+            
+            // If no direct match with package name, try broader search with the NuGetForUnity label
+            if (guids.Length == 0)
             {
-                // Look for any dll matching the package name (might have lib subfolder or version in path)
-                string[] dlls = Directory.GetFiles(packageDir, $"{packageName}.dll", SearchOption.AllDirectories);
-                if (dlls.Length > 0)
+                guids = AssetDatabase.FindAssets($"l:NuGetForUnity");
+                
+                // Look through each asset with NuGetForUnity label
+                foreach (string guid in guids)
                 {
-                    return true;
+                    string path = AssetDatabase.GUIDToAssetPath(guid);
+                    if (path.Contains(packageName) && path.EndsWith(".dll"))
+                    {
+                        return true;
+                    }
                 }
+                return false;
             }
-
-            // Option 2: Check in direct packages location
-            string directDllPath = Path.Combine(NugetPackagesDir, $"{packageName}.dll");
-            if (File.Exists(directDllPath))
-            {
-                return true;
-            }
-
-            // Option 3: Check if any DLL with package name exists in project (for Unity-specific packages)
-            string[] allProjectDlls = Directory.GetFiles("Assets", $"{packageName}.dll", SearchOption.AllDirectories);
-            return allProjectDlls.Length > 0;
+            
+            return guids.Length > 0;
         }
 
         private static void CreateNewPackageConfig(List<PackageInfo> requiredPackages)
