@@ -5,7 +5,9 @@
   "description": "A Unity extension for TechTrain.",
   "unity": "2022.3",
   "dependencies": {
-    "com.unity.nuget.newtonsoft-json": "3.1.0",
+    "com.unity.nuget.newtonsoft-json": "3.1.0"
+  },
+  "gitDependencies": {
     "com.github-glitchenzo.nugetforunity": "https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity#v4.3.0"
   }
 }
