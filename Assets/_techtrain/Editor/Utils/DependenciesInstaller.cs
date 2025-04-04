@@ -42,7 +42,10 @@ namespace TechtrainExtension.Utils
         public static void NotifyGitDependenciesInstalled()
         {
             _gitDependenciesInstalled = true;
-            PackageConfigHandler.CheckAndUpdatePackageConfig();
+            System.Threading.Tasks.Task.Delay(2000).ContinueWith(_ =>
+            {
+                PackageConfigHandler.CheckAndUpdatePackageConfig();
+            });
         }
         
         public static void NotifyNugetDependenciesInstalled()

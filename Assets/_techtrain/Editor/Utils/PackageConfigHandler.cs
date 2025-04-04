@@ -119,6 +119,8 @@ namespace TechtrainExtension.Utils
             {
                 UpdateExistingPackageConfig(requiredPackages);
             }
+
+            AssetDatabase.Refresh();
             
             // Don't notify immediately - we'll check for the DLLs first
             // Start a delayed check to see if the DLLs are installed
@@ -161,6 +163,7 @@ namespace TechtrainExtension.Utils
                     {
                         // Maximum retries reached, proceed anyway but with a warning
                         Debug.LogWarning("Some NuGet packages may not be fully installed. You might need to restart Unity.");
+                        AssetDatabase.Refresh();
                     }
                 }
                 else
@@ -221,7 +224,6 @@ namespace TechtrainExtension.Utils
             // Save the XML document
             doc.Save(PackageConfigPath);
             Debug.Log($"Created new packages.config file with {requiredPackages.Count} package entries.");
-            AssetDatabase.Refresh();
         }
 
         private static void UpdateExistingPackageConfig(List<PackageInfo> requiredPackages)
@@ -262,7 +264,6 @@ namespace TechtrainExtension.Utils
                 {
                     doc.Save(PackageConfigPath);
                     Debug.Log($"Added {addedCount} package(s) to existing packages.config file.");
-                    AssetDatabase.Refresh();
                 }
             }
             catch (XmlException ex)
