@@ -14,7 +14,6 @@ namespace TechtrainExtension.Utils
      * This class handles installation of Git packages using Unity's Package Manager API.
      * It reads Git dependencies from package.json and adds them to the project.
      */
-    [InitializeOnLoad]
     public class GitPackageInstaller
     {
         // We'll resolve the actual path at runtime
@@ -36,7 +35,7 @@ namespace TechtrainExtension.Utils
         private static AddRequest? _currentRequest;
         private static List<GitPackageInfo> _pendingPackages = new List<GitPackageInfo>();
         private static int _currentPackageIndex = 0;
-        private static ListRequest _listRequest;
+        private static ListRequest? _listRequest;
 
         static GitPackageInstaller()
         {
@@ -47,9 +46,6 @@ namespace TechtrainExtension.Utils
                 throw new System.Exception("Could not resolve package.json path");
             }
             PackageJsonPath = manifestPath;
-
-            // This constructor will be called when Unity loads/reloads scripts
-            EditorApplication.delayCall += () => CheckAndInstallPackages();
         }
 
         private static List<GitPackageInfo> ReadGitDependenciesFromPackageJson()
@@ -101,7 +97,7 @@ namespace TechtrainExtension.Utils
             return gitPackages;
         }
 
-        private static void CheckAndInstallPackages()
+        public static void CheckAndInstallPackages()
         {
             // Read Git dependencies from package.json
             var requiredGitPackages = ReadGitDependenciesFromPackageJson();
@@ -109,6 +105,7 @@ namespace TechtrainExtension.Utils
             if (requiredGitPackages.Count == 0)
             {
                 Debug.Log("No Git packages to install.");
+                DependenciesInstaller.NotifyGitDependenciesInstalled();
                 return;
             }
 
@@ -119,7 +116,7 @@ namespace TechtrainExtension.Utils
 
         private static void OnListRequestUpdate()
         {
-            if (!_listRequest.IsCompleted)
+            if (_listRequest == null || !_listRequest.IsCompleted)
                 return;
 
             // Important: Remove this handler first to prevent multiple executions
@@ -157,11 +154,13 @@ namespace TechtrainExtension.Utils
                 else
                 {
                     Debug.Log("All git packages are already installed.");
+                    DependenciesInstaller.NotifyGitDependenciesInstalled();
                 }
             }
             else
             {
                 Debug.LogError($"Failed to list packages: {_listRequest.Error.message}");
+                DependenciesInstaller.NotifyGitDependenciesInstalled();
             }
         }
 
@@ -173,6 +172,7 @@ namespace TechtrainExtension.Utils
                 Debug.Log("All git packages have been installed");
                 _pendingPackages.Clear();
                 _currentPackageIndex = 0;
+                DependenciesInstaller.NotifyGitDependenciesInstalled();
                 return;
             }
 

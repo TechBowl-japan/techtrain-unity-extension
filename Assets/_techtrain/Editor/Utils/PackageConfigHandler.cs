@@ -6,6 +6,7 @@ using System.IO;
 using System.Xml;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace TechtrainExtension.Utils
 {
@@ -13,10 +14,10 @@ namespace TechtrainExtension.Utils
      * https://github.com/GlitchEnzo/NuGetForUnity
      * This class handles the creation and updating of a packages.config file which is used by NuGetForUnity to manage package dependencies in Unity projects.
     */
-    [InitializeOnLoad]
     public class PackageConfigHandler
     {
         private const string PackageConfigPath = "Assets/packages.config";
+        private const string NugetPackagesDir = "Assets/Packages";
         
         // We'll resolve the actual path at runtime
         private static readonly string PackageJsonPath;
@@ -45,8 +46,7 @@ namespace TechtrainExtension.Utils
             }
             PackageJsonPath = manifestPath;
 
-            // This constructor will be called when Unity loads/reloads scripts
-            CheckAndUpdatePackageConfig();
+            // Remove automatic initialization - will be called by DependenciesInstaller instead
         }
 
         private static List<PackageInfo> ReadNugetDependenciesFromPackageJson()
@@ -98,7 +98,7 @@ namespace TechtrainExtension.Utils
             return nugetPackages;
         }
 
-        private static void CheckAndUpdatePackageConfig()
+        public static void CheckAndUpdatePackageConfig()
         {
             // Get required packages from package.json
             List<PackageInfo> requiredPackages = ReadNugetDependenciesFromPackageJson();
@@ -106,6 +106,7 @@ namespace TechtrainExtension.Utils
             if (requiredPackages.Count == 0)
             {
                 Debug.Log("No NuGet packages to install.");
+                DependenciesInstaller.NotifyNugetDependenciesInstalled();
                 return;
             }
 
@@ -118,6 +119,87 @@ namespace TechtrainExtension.Utils
             {
                 UpdateExistingPackageConfig(requiredPackages);
             }
+            
+            // Don't notify immediately - we'll check for the DLLs first
+            // Start a delayed check to see if the DLLs are installed
+            EditorApplication.delayCall += () => CheckForPackageDlls(requiredPackages);
+        }
+
+        private static void CheckForPackageDlls(List<PackageInfo> requiredPackages)
+        {
+            bool allDllsInstalled = true;
+            int maxRetries = 10; // Maximum number of retries
+            int currentRetry = 0;
+
+            void CheckDlls()
+            {
+                allDllsInstalled = true;
+
+                foreach (var package in requiredPackages)
+                {
+                    string packageName = package.Id;
+                    bool dllFound = IsDllInstalled(packageName);
+
+                    if (!dllFound)
+                    {
+                        Debug.Log($"Waiting for NuGet package DLL: {packageName}");
+                        allDllsInstalled = false;
+                    }
+                }
+
+                if (!allDllsInstalled)
+                {
+                    currentRetry++;
+                    
+                    if (currentRetry < maxRetries)
+                    {
+                        // Check again after a delay
+                        Debug.Log($"Retrying check for NuGet DLLs ({currentRetry}/{maxRetries})...");
+                        EditorApplication.delayCall += CheckDlls;
+                    }
+                    else
+                    {
+                        // Maximum retries reached, proceed anyway but with a warning
+                        Debug.LogWarning("Some NuGet packages may not be fully installed. You might need to restart Unity.");
+                        DependenciesInstaller.NotifyNugetDependenciesInstalled();
+                    }
+                }
+                else
+                {
+                    // All DLLs are installed
+                    Debug.Log("All NuGet package DLLs have been verified.");
+                    DependenciesInstaller.NotifyNugetDependenciesInstalled();
+                }
+            }
+
+            // Start the recursive check
+            CheckDlls();
+        }
+
+        private static bool IsDllInstalled(string packageName)
+        {
+            // Option 1: Check in NuGet package directory
+            string packageDir = Path.Combine(NugetPackagesDir, packageName);
+            if (Directory.Exists(packageDir))
+            {
+                // Look for any dll matching the package name (might have lib subfolder or version in path)
+                string[] dlls = Directory.GetFiles(packageDir, $"{packageName}.dll", SearchOption.AllDirectories);
+                if (dlls.Length > 0)
+                {
+                    return true;
+                }
+            }
+
+            // Option 2: Check in direct packages location
+            string directDllPath = Path.Combine(NugetPackagesDir, $"{packageName}.dll");
+            if (File.Exists(directDllPath))
+            {
+                return true;
+            }
+
+            // Option 3: Check if any DLL with package name exists in project (for Unity-specific packages)
+            string[] allProjectDlls = Directory.GetFiles("Assets", $"{packageName}.dll", SearchOption.AllDirectories);
+            return allProjectDlls.Length > 0;
         }
 
         private static void CreateNewPackageConfig(List<PackageInfo> requiredPackages)
