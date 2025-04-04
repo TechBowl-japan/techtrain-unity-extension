@@ -120,6 +120,7 @@ namespace TechtrainExtension.Utils
                 UpdateExistingPackageConfig(requiredPackages);
             }
 
+            AssetDatabase.ImportAsset(PackageConfigPath, ImportAssetOptions.ForceUpdate);
             AssetDatabase.Refresh();
             
             // Don't notify immediately - we'll check for the DLLs first
