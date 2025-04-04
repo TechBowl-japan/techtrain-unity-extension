@@ -1,3 +1,5 @@
+#nullable enable
+
 using UnityEngine;
 using UnityEditor;
 using System.IO;
@@ -6,7 +8,7 @@ namespace TechtrainExtension.Utils
 {
     public static class PackageUtils
     {
-        private static string FindPackageRoot()
+        private static string? FindPackageRoot()
         {
             // Find the PackageUtils script by name using AssetDatabase
             string[] guids = AssetDatabase.FindAssets($"t:MonoScript {typeof(PackageUtils).Name}");
@@ -31,7 +33,7 @@ namespace TechtrainExtension.Utils
             return Path.GetDirectoryName(Path.GetDirectoryName(scriptDirectory));
         }
 
-        public static string ResolvePackageJsonPath()
+        public static string? ResolvePackageJsonPath()
         {
             var packageRoot = FindPackageRoot();
             if (string.IsNullOrEmpty(packageRoot))

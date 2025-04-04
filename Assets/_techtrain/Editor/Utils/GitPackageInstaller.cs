@@ -1,3 +1,5 @@
+#nullable enable
+
 using UnityEngine;
 using UnityEditor;
 using System.IO;
@@ -35,7 +37,12 @@ namespace TechtrainExtension.Utils
         static GitPackageInstaller()
         {
             // Resolve package.json path relative to this script
-            PackageJsonPath = PackageUtils.ResolvePackageJsonPath();
+            var manifestPath = PackageUtils.ResolvePackageJsonPath();
+            if (string.IsNullOrEmpty(manifestPath) || manifestPath == null)
+            {
+                throw new System.Exception("Could not resolve package.json path");
+            }
+            PackageJsonPath = manifestPath;
 
             // This constructor will be called when Unity loads/reloads scripts
             CheckAndUpdateManifest();
@@ -56,14 +63,16 @@ namespace TechtrainExtension.Utils
                 string jsonContent = File.ReadAllText(PackageJsonPath);
                 JObject packageJson = JObject.Parse(jsonContent);
 
+                var _gitDeps = packageJson["gitDependencies"];
+
                 // Check if gitDependencies section exists
-                if (packageJson["gitDependencies"] == null)
+                if (_gitDeps == null)
                 {
                     Debug.Log("No gitDependencies found in package.json");
                     return gitPackages;
                 }
 
-                var gitDeps = (JObject)packageJson["gitDependencies"];
+                var gitDeps = (JObject)_gitDeps;
 
                 foreach (var prop in gitDeps.Properties())
                 {
@@ -114,15 +123,16 @@ namespace TechtrainExtension.Utils
                 JObject manifestJson = JObject.Parse(jsonContent);
 
                 // Get or create dependencies object
+                var dependenciesObj = manifestJson["dependencies"];
                 JObject dependencies;
-                if (manifestJson["dependencies"] == null)
+                if (dependenciesObj == null)
                 {
                     dependencies = new JObject();
                     manifestJson["dependencies"] = dependencies;
                 }
                 else
                 {
-                    dependencies = (JObject)manifestJson["dependencies"];
+                    dependencies = (JObject)dependenciesObj;
                 }
 
                 bool manifestChanged = false;
