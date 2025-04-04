@@ -37,13 +37,12 @@ namespace TechtrainExtension.Utils
             
             // Start both installation processes
             GitPackageInstaller.CheckAndInstallPackages();
-            PackageConfigHandler.CheckAndUpdatePackageConfig();
         }
         
         public static void NotifyGitDependenciesInstalled()
         {
             _gitDependenciesInstalled = true;
-            CheckAllDependenciesInstalled();
+            PackageConfigHandler.CheckAndUpdatePackageConfig();
         }
         
         public static void NotifyNugetDependenciesInstalled()
