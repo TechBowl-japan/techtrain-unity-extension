@@ -72,6 +72,11 @@ namespace TechtrainExtension.Utils
                 Debug.LogError("Failed to resolve extension folder paths");
                 return;
             }
+
+            if (!Directory.Exists(_dotExtensionFolderPath) && Directory.Exists(_finalExtensionFolderPath))
+            {
+                return;
+            }
             
             try
             {
@@ -79,6 +84,7 @@ namespace TechtrainExtension.Utils
                 
                 // Use AssetDatabase to move assets properly within Unity
                 Directory.Move(_dotExtensionFolderPath, _finalExtensionFolderPath);
+                File.Move($"{_dotExtensionFolderPath}.meta", $"{_finalExtensionFolderPath}.meta");
                 
                 // Refresh the AssetDatabase to reflect changes
                 AssetDatabase.Refresh();
