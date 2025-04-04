@@ -78,13 +78,7 @@ namespace TechtrainExtension.Utils
                 Debug.Log($"Renaming {_dotExtensionFolderPath} to {_finalExtensionFolderPath}...");
                 
                 // Use AssetDatabase to move assets properly within Unity
-                string moveSuccess = AssetDatabase.MoveAsset(_dotExtensionFolderPath, _finalExtensionFolderPath);
-                
-                if (moveSuccess != string.Empty)
-                {
-                    Debug.LogError($"Failed to rename folder from {_dotExtensionFolderPath} to {_finalExtensionFolderPath} {moveSuccess}");
-                    return;
-                }
+                Directory.Move(_dotExtensionFolderPath, _finalExtensionFolderPath);
                 
                 // Refresh the AssetDatabase to reflect changes
                 AssetDatabase.Refresh();
