@@ -35,40 +35,10 @@ namespace TechtrainExtension.Utils
         static GitPackageInstaller()
         {
             // Resolve package.json path relative to this script
-            PackageJsonPath = ResolvePackageJsonPath();
+            PackageJsonPath = PackageUtils.ResolvePackageJsonPath();
 
             // This constructor will be called when Unity loads/reloads scripts
             CheckAndUpdateManifest();
-        }
-
-        private static string ResolvePackageJsonPath()
-        {
-            // Find the GitPackageInstaller script by name using AssetDatabase
-            string[] guids = AssetDatabase.FindAssets($"t:MonoScript {typeof(GitPackageInstaller).Name}");
-
-            if (guids.Length == 0)
-            {
-                Debug.LogError("Could not find GitPackageInstaller script");
-                return null;
-            }
-
-            string scriptPath = AssetDatabase.GUIDToAssetPath(guids[0]);
-
-            if (string.IsNullOrEmpty(scriptPath))
-            {
-                Debug.LogError("Could not resolve path for GitPackageInstaller script");
-                return null;
-            }
-
-            string scriptDirectory = Path.GetDirectoryName(scriptPath);
-
-            // Navigate up from Editor/Utils to _techtrain folder
-            string packageRoot = Path.GetDirectoryName(Path.GetDirectoryName(scriptDirectory));
-
-            string packageJsonPath = Path.Combine(packageRoot, "package.json");
-            Debug.Log($"Resolved package.json path: {packageJsonPath}");
-
-            return packageJsonPath;
         }
 
         private static List<GitPackageInfo> ReadGitDependenciesFromPackageJson()
