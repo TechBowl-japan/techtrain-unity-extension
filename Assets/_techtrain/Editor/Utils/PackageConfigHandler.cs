@@ -161,7 +161,6 @@ namespace TechtrainExtension.Utils
                     {
                         // Maximum retries reached, proceed anyway but with a warning
                         Debug.LogWarning("Some NuGet packages may not be fully installed. You might need to restart Unity.");
-                        DependenciesInstaller.NotifyNugetDependenciesInstalled();
                     }
                 }
                 else
