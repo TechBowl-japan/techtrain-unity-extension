@@ -1,0 +1,11 @@
+{
+  "name": "dev.techtrain.techtrain-unity-extension",
+  "version": "1.0.0",
+  "displayName": "TechTrain Unity Extension",
+  "description": "A Unity extension for TechTrain.",
+  "unity": "2022.3",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.1.0",
+    "com.github-glitchenzo.nugetforunity": "https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnityhttps://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity#v4.3.0"
+  }
+}
