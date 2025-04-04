@@ -160,7 +160,6 @@ namespace TechtrainExtension.Utils
             else
             {
                 Debug.LogError($"Failed to list packages: {_listRequest.Error.message}");
-                DependenciesInstaller.NotifyGitDependenciesInstalled();
             }
         }
 
