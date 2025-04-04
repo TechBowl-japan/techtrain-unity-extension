@@ -2,22 +2,21 @@
 
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.PackageManager;
+using UnityEditor.PackageManager.Requests;
 using System.IO;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace TechtrainExtension.Utils
 {
     /**
-     * This class handles installation of Git packages by modifying the project's manifest.json file.
-     * It reads Git dependencies from package.json and adds them to the project manifest.
+     * This class handles installation of Git packages using Unity's Package Manager API.
+     * It reads Git dependencies from package.json and adds them to the project.
      */
     [InitializeOnLoad]
     public class GitPackageInstaller
     {
-        private const string ManifestPath = "Packages/manifest.json";
-
         // We'll resolve the actual path at runtime
         private static readonly string PackageJsonPath;
 
@@ -34,6 +33,11 @@ namespace TechtrainExtension.Utils
             }
         }
 
+        private static AddRequest? _currentRequest;
+        private static List<GitPackageInfo> _pendingPackages = new List<GitPackageInfo>();
+        private static int _currentPackageIndex = 0;
+        private static ListRequest _listRequest;
+
         static GitPackageInstaller()
         {
             // Resolve package.json path relative to this script
@@ -45,7 +49,7 @@ namespace TechtrainExtension.Utils
             PackageJsonPath = manifestPath;
 
             // This constructor will be called when Unity loads/reloads scripts
-            CheckAndUpdateManifest();
+            EditorApplication.delayCall += () => CheckAndInstallPackages();
         }
 
         private static List<GitPackageInfo> ReadGitDependenciesFromPackageJson()
@@ -97,14 +101,8 @@ namespace TechtrainExtension.Utils
             return gitPackages;
         }
 
-        private static void CheckAndUpdateManifest()
+        private static void CheckAndInstallPackages()
         {
-            if (!File.Exists(ManifestPath))
-            {
-                Debug.LogError("manifest.json not found at expected path: " + ManifestPath);
-                return;
-            }
-
             // Read Git dependencies from package.json
             var requiredGitPackages = ReadGitDependenciesFromPackageJson();
 
@@ -114,59 +112,100 @@ namespace TechtrainExtension.Utils
                 return;
             }
 
-            try
+            // Get list of installed packages to check what needs to be installed
+            _listRequest = Client.List(true);
+            EditorApplication.update += OnListRequestUpdate;
+        }
+
+        private static void OnListRequestUpdate()
+        {
+            if (!_listRequest.IsCompleted)
+                return;
+
+            // Important: Remove this handler first to prevent multiple executions
+            EditorApplication.update -= OnListRequestUpdate;
+            
+            if (_listRequest.Status == StatusCode.Success)
             {
-                // Read the manifest file
-                string jsonContent = File.ReadAllText(ManifestPath);
-
-                // Parse the JSON
-                JObject manifestJson = JObject.Parse(jsonContent);
-
-                // Get or create dependencies object
-                var dependenciesObj = manifestJson["dependencies"];
-                JObject dependencies;
-                if (dependenciesObj == null)
+                // Find packages that need to be installed
+                var requiredGitPackages = ReadGitDependenciesFromPackageJson();
+                foreach (var package in requiredGitPackages)
                 {
-                    dependencies = new JObject();
-                    manifestJson["dependencies"] = dependencies;
+                    bool isInstalled = false;
+                    foreach (var installedPackage in _listRequest.Result)
+                    {
+                        if (installedPackage.name == package.Name)
+                        {
+                            Debug.Log($"Git package already exists: {package.Name}");
+                            isInstalled = true;
+                            break;
+                        }
+                    }
+
+                    if (!isInstalled)
+                    {
+                        _pendingPackages.Add(package);
+                    }
+                }
+
+                // Start installing packages if any are needed
+                if (_pendingPackages.Count > 0)
+                {
+                    Debug.Log($"Found {_pendingPackages.Count} git packages to install");
+                    InstallNextPackage();
                 }
                 else
                 {
-                    dependencies = (JObject)dependenciesObj;
-                }
-
-                bool manifestChanged = false;
-
-                // Add each required Git package if it doesn't exist
-                foreach (var package in requiredGitPackages)
-                {
-                    if (dependencies[package.Name] == null)
-                    {
-                        // Package doesn't exist, add it
-                        dependencies[package.Name] = package.GitUrl;
-                        Debug.Log($"Adding Git package: {package.Name} from {package.GitUrl}");
-                        manifestChanged = true;
-                    }
-                    else
-                    {
-                        Debug.Log($"Git package already exists: {package.Name}");
-                    }
-                }
-
-                if (manifestChanged)
-                {
-                    // Write the updated manifest back to disk
-                    File.WriteAllText(ManifestPath, manifestJson.ToString(Formatting.Indented));
-                    Debug.Log("Updated manifest.json with required Git packages");
-
-                    // Refresh AssetDatabase to apply changes
-                    AssetDatabase.Refresh();
+                    Debug.Log("All git packages are already installed.");
                 }
             }
-            catch (System.Exception ex)
+            else
             {
-                Debug.LogError($"Error updating manifest.json: {ex.Message}");
+                Debug.LogError($"Failed to list packages: {_listRequest.Error.message}");
             }
+        }
+
+        private static void InstallNextPackage()
+        {
+            if (_currentPackageIndex >= _pendingPackages.Count)
+            {
+                // All packages have been processed
+                Debug.Log("All git packages have been installed");
+                _pendingPackages.Clear();
+                _currentPackageIndex = 0;
+                return;
+            }
+
+            var package = _pendingPackages[_currentPackageIndex];
+            Debug.Log($"Installing git package: {package.Name} from {package.GitUrl}");
+            
+            _currentRequest = Client.Add(package.GitUrl);
+            EditorApplication.update += OnAddRequestUpdate;
+        }
+
+        private static void OnAddRequestUpdate()
+        {
+            if (_currentRequest == null || !_currentRequest.IsCompleted)
+                return;
+
+            // Important: Remove the handler first to prevent multiple executions
+            EditorApplication.update -= OnAddRequestUpdate;
+
+            if (_currentRequest.Status == StatusCode.Success)
+            {
+                Debug.Log($"Successfully installed package: {_currentRequest.Result.displayName}");
+            }
+            else
+            {
+                Debug.LogError($"Failed to install package: {_currentRequest.Error.message}");
+            }
+
+            // Move to the next package
+            _currentPackageIndex++;
+            _currentRequest = null;
+            
+            // Process the next package
+            InstallNextPackage();
         }
     }
 }
