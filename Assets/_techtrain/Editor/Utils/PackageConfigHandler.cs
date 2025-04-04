@@ -1,8 +1,11 @@
+#nullable enable
+
 using UnityEngine;
 using UnityEditor;
 using System.IO;
-using NugetForUnity;
 using System.Xml;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace TechtrainExtension.Utils
 {
@@ -14,6 +17,9 @@ namespace TechtrainExtension.Utils
     public class PackageConfigHandler
     {
         private const string PackageConfigPath = "Assets/packages.config";
+        
+        // We'll resolve the actual path at runtime
+        private static readonly string PackageJsonPath;
         
         private struct PackageInfo
         {
@@ -29,31 +35,92 @@ namespace TechtrainExtension.Utils
             }
         }
 
-        private static readonly PackageInfo[] RequiredPackages = new PackageInfo[]
-        {
-            new PackageInfo("Nett", "0.15.0"),
-        };
-
         static PackageConfigHandler()
         {
+            // Resolve package.json path relative to this script
+            var manifestPath = PackageUtils.ResolvePackageJsonPath();
+            if (string.IsNullOrEmpty(manifestPath) || manifestPath == null)
+            {
+                throw new System.Exception("Could not resolve package.json path");
+            }
+            PackageJsonPath = manifestPath;
+
             // This constructor will be called when Unity loads/reloads scripts
             CheckAndUpdatePackageConfig();
         }
 
+        private static List<PackageInfo> ReadNugetDependenciesFromPackageJson()
+        {
+            var nugetPackages = new List<PackageInfo>();
+
+            if (!File.Exists(PackageJsonPath))
+            {
+                Debug.LogWarning("package.json not found at: " + PackageJsonPath);
+                return nugetPackages;
+            }
+
+            try
+            {
+                string jsonContent = File.ReadAllText(PackageJsonPath);
+                JObject packageJson = JObject.Parse(jsonContent);
+
+                var _nugetDeps = packageJson["nugetDependencies"];
+
+                // Check if nugetDependencies section exists
+                if (_nugetDeps == null)
+                {
+                    Debug.Log("No nugetDependencies found in package.json");
+                    return nugetPackages;
+                }
+
+                var nugetDeps = (JObject)_nugetDeps;
+
+                foreach (var prop in nugetDeps.Properties())
+                {
+                    string packageId = prop.Name;
+                    string version = prop.Value.ToString();
+
+                    if (!string.IsNullOrEmpty(version))
+                    {
+                        nugetPackages.Add(new PackageInfo(packageId, version));
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Missing version for NuGet package {packageId} in package.json");
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"Error reading package.json: {ex.Message}");
+            }
+
+            return nugetPackages;
+        }
+
         private static void CheckAndUpdatePackageConfig()
         {
+            // Get required packages from package.json
+            List<PackageInfo> requiredPackages = ReadNugetDependenciesFromPackageJson();
+            
+            if (requiredPackages.Count == 0)
+            {
+                Debug.Log("No NuGet packages to install.");
+                return;
+            }
+
             if (!File.Exists(PackageConfigPath))
             {
                 // Create new packages.config file if it doesn't exist
-                CreateNewPackageConfig();
+                CreateNewPackageConfig(requiredPackages);
             }
             else
             {
-                UpdateExistingPackageConfig();
+                UpdateExistingPackageConfig(requiredPackages);
             }
         }
 
-        private static void CreateNewPackageConfig()
+        private static void CreateNewPackageConfig(List<PackageInfo> requiredPackages)
         {
             XmlDocument doc = new XmlDocument();
             
@@ -66,18 +133,18 @@ namespace TechtrainExtension.Utils
             doc.AppendChild(root);
             
             // Add all required packages
-            foreach (var package in RequiredPackages)
+            foreach (var package in requiredPackages)
             {
                 AddPackage(doc, root, package);
             }
             
             // Save the XML document
             doc.Save(PackageConfigPath);
-            Debug.Log($"Created new packages.config file with {RequiredPackages.Length} package entries.");
+            Debug.Log($"Created new packages.config file with {requiredPackages.Count} package entries.");
             AssetDatabase.Refresh();
         }
 
-        private static void UpdateExistingPackageConfig()
+        private static void UpdateExistingPackageConfig(List<PackageInfo> requiredPackages)
         {
             try
             {
@@ -94,7 +161,7 @@ namespace TechtrainExtension.Utils
                 int addedCount = 0;
 
                 // Check each required package
-                foreach (var package in RequiredPackages)
+                foreach (var package in requiredPackages)
                 {
                     // Check if package already exists
                     XmlNodeList existingPackages = doc.SelectNodes($"//package[@id='{package.Id}']");
