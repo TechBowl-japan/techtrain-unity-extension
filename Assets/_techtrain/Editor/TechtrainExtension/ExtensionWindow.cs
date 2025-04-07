@@ -46,7 +46,7 @@ namespace TechtrainExtension
                 return;
             }
 
-            if (!await IsLoggedIn())
+            if (!await IsLoggedIn(out var user))
             {
                 var login = new Pages.Login(this);
                 root.Add(login.root);
@@ -58,7 +58,7 @@ namespace TechtrainExtension
 
             try
             {
-                railwayManager = new RailwayManager(apiClient, false);
+                railwayManager = new RailwayManager(apiClient, user.is_paid);
             }
             catch (System.Exception e)
             {
@@ -143,7 +143,7 @@ namespace TechtrainExtension
             _ = InitializePage();
         }
 
-        private async Task<bool> IsLoggedIn()
+        private async Task<bool> IsLoggedIn(out UsersMeResponse user)
         {
             if (configManager.Config.auth.apiToken == null) return false;
             var user = await apiClient.PostUsersMe();
