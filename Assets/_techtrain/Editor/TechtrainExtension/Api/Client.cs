@@ -111,7 +111,7 @@ namespace TechtrainExtension.Api
 
         public async Task<Models.v3.Response<Models.v3.UsersMeResponse>?> PostUsersMe()
         {
-            return await CreatePostRequest<object, Models.v3.Response<Models.v3.UsersMeResponse>>($"{baseUrlV3}/user/users/me", new object());
+            return await CreatePostRequest<object, Models.v3.Response<Models.v3.UsersMeResponse>>($"{baseUrlV3}/user/users/me", new object(), true);
         }
 
         private async Task<string> PostRefreshToken()
