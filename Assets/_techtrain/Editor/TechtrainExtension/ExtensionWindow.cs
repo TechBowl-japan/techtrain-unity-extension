@@ -4,6 +4,7 @@ using UnityEngine.UIElements;
 using UnityEditor;
 using System.Threading.Tasks;
 using System.Linq;
+using TechtrainExtension.Api.Models.v3;
 
 
 namespace TechtrainExtension
@@ -45,9 +46,19 @@ namespace TechtrainExtension
                 root.Add(maintenance.root);
                 return;
             }
-
-            if (!await IsLoggedIn(out var user) || user == null)
+            Response<UsersMeResponse>? user = null;
+            try
             {
+
+                user = await apiClient.PostUsersMe();
+            }
+            catch (System.Exception e)
+            {
+            }
+
+            if (user == null || user.data == null)
+            {
+
                 var login = new Pages.Login(this);
                 root.Add(login.root);
                 return;
@@ -58,7 +69,7 @@ namespace TechtrainExtension
 
             try
             {
-                railwayManager = new RailwayManager(apiClient, user.is_paid);
+                railwayManager = new RailwayManager(apiClient, user.data.is_paid);
             }
             catch (System.Exception e)
             {
@@ -141,18 +152,6 @@ namespace TechtrainExtension
             apiClient = new Api.Client(configManager);
 
             _ = InitializePage();
-        }
-
-        private async Task<bool> IsLoggedIn(out UsersMeResponse? user)
-        {
-            user = null;
-            if (configManager.Config.auth.apiToken == null) return false;
-            user = await apiClient.PostUsersMe();
-            if (user == null || user.data == null)
-            {
-                return false;
-            }
-            return true;
         }
 
         [MenuItem("Tools/Techtrain")]
