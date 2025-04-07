@@ -46,7 +46,7 @@ namespace TechtrainExtension
                 return;
             }
 
-            if (!await IsLoggedIn(out var user))
+            if (!await IsLoggedIn(out var user) || user == null)
             {
                 var login = new Pages.Login(this);
                 root.Add(login.root);
@@ -143,8 +143,9 @@ namespace TechtrainExtension
             _ = InitializePage();
         }
 
-        private async Task<bool> IsLoggedIn(out UsersMeResponse user)
+        private async Task<bool> IsLoggedIn(out UsersMeResponse? user)
         {
+            user = null;
             if (configManager.Config.auth.apiToken == null) return false;
             user = await apiClient.PostUsersMe();
             if (user == null || user.data == null)
