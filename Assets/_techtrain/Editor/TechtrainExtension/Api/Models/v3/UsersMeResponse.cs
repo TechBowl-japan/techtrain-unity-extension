@@ -7,5 +7,6 @@ namespace TechtrainExtension.Api.Models.v3
         public int id { get; set; }
         public string? nickname { get; set; }
         public bool is_agreed_current_term { get; set; }
+        public bool is_paid	 { get; set; }
     }
 }
