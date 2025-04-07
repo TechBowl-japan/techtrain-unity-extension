@@ -3,3 +3,28 @@ VisualElement {}
 .result{
 	flex-direction: row;
 }
+
+.button{
+	padding: 5px 10px;
+}
+
+.run-button{
+	background-color: #288ceb;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.result-container{
+	padding-left: 10px;
+}
+
+.test-runner{
+	padding: 10px 0;
+}
+
+.result-area{
+	padding: 10px 0;
+}

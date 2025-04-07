@@ -54,8 +54,10 @@ namespace TechtrainExtension.Pages
         {
             var runButton = new Button(() => RunTests())
             {
-                text = "できた！"
+                text = "できた！",
             };
+            runButton.AddToClassList("button");
+            runButton.AddToClassList("run-button");
             return runButton;
         }
 
@@ -84,6 +86,7 @@ namespace TechtrainExtension.Pages
                 };
                 resultElement.Add(icon);
                 var container = new VisualElement();
+                container.AddToClassList("result-container");
                 var summary = result.isPassed ? "Passed" : "Failed";
                 var testLabel = new Label($"{result.path} {summary}");
                 testLabel.AddToClassList("test-label");
@@ -102,10 +105,12 @@ namespace TechtrainExtension.Pages
 
         private Button CreateShowTestRunnerButton()
         {
-            return new Button(() => ShowTestRunner())
+            var showButton =  new Button(() => ShowTestRunner())
             {
                 text = "テストランナーを開く"
             };
+            showButton.AddToClassList("button");
+            return showButton;
         }
 
         private void ShowTestRunner()

@@ -104,7 +104,7 @@ namespace TechtrainExtension
                 return;
             }
             root.Clear();
-            root.Add(new Label($"挑戦中のStation: {currentStation.title}"));
+            root.Add(new Label($"挑戦中のStation: Station{currentStation.order.ToString().PadLeft(2, '0')} {currentStation.title}"));
             if (currentStation.confirmation_method != Api.Models.v3.RailwayStationConfirmationMethod.unit_test)
             {
                 root.Add(new Label("このStationは自動テストではないためUnity上でクリア判定が行えません。ブラウザ上から判定を行ってください"));
@@ -135,6 +135,7 @@ namespace TechtrainExtension
             if (testRunner.IsTestSucessful(currentStation.order))
             {
                 testRunner.ClearTestResults();
+                EditorUtility.DisplayDialog("クリアおめでとうございます！", "次の問題に進んでください。", "OK");
                 this.Reload();
                 return;
             }
