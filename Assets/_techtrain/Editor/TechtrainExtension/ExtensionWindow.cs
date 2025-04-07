@@ -135,6 +135,7 @@ namespace TechtrainExtension
             if (testRunner.IsTestSucessful(currentStation.order))
             {
                 testRunner.ClearTestResults();
+                EditorUtility.DisplayDialog("クリアおめでとうございます！", "次の問題に進んでください。", "OK");
                 this.Reload();
                 return;
             }
