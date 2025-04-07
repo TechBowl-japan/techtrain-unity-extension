@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<< HEAD
 guid: dc7da0e089764854cb9febc454cc8c2c
-=======
-guid: 169310e328c1eec4fb719bbc70771f68
->>>>>>> e933f35 (feat: api client/login)
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
