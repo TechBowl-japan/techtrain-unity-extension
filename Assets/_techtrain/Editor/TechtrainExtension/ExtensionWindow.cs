@@ -54,6 +54,7 @@ namespace TechtrainExtension
             }
             catch (System.Exception e)
             {
+                Debug.LogError(e);
             }
 
             if (user == null || user.data == null)
