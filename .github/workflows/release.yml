@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  push:
+    branches: [master]
+
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: update folder
+        run: |
+          mv Assets/_techtrain/Editor/TechtrainExtension Assets/_techtrain/Editor/.TechtrainExtension
+          mv Assets/_techtrain/Editor/TechtrainExtension.meta Assets/_techtrain/Editor/.TechtrainExtension.meta
+      
+      - name: Create new Branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "github-actions"
+          git checkout -b release
+          git add .
+          git commit -m "move techtrain extension folder" -n
+          git push -f origin release
