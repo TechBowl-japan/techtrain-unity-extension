@@ -146,7 +146,7 @@ namespace TechtrainExtension
         private async Task<bool> IsLoggedIn(out UsersMeResponse user)
         {
             if (configManager.Config.auth.apiToken == null) return false;
-            var user = await apiClient.PostUsersMe();
+            user = await apiClient.PostUsersMe();
             if (user == null || user.data == null)
             {
                 return false;
